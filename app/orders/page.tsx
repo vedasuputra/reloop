@@ -8,7 +8,7 @@ import { categoryReturnRates, type Params } from "@/lib/data";
 
 const PAGE_SIZE = 50;
 
-export const metadata = { title: "Order Analysis" };
+export const metadata = { title: "Orders" };
 
 export default function Orders({ searchParams }: { searchParams: Promise<Params> }) {
   return (
@@ -44,7 +44,10 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   return (
     <>
       <Nav qs={base} email={user?.email} />
-      <h1 className="text-2xl font-bold mb-3">{t("Order Analysis", "Phân tích đơn hàng")}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <h1 className="text-2xl font-bold">{t("Orders", "Đơn hàng")}</h1>
+        <Link href={`/score${base}`} className="rounded border px-3 py-1 text-sm">+ {t("Score a new order", "Chấm điểm đơn mới")}</Link>
+      </div>
       <Controls method={method} presetKey={presetKey} orgId={orgId} orgs={orgs} hasCustom={hasCustom} action="/orders" hidden={{ category, rec, q }} />
 
       <form action="/orders" className="flex flex-wrap items-end gap-3 my-4 text-sm">
@@ -91,7 +94,7 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
               const h = catRates.get(s.row.category);
               return (
                 <tr key={s.row.id} className="border-b">
-                  <td><Link className="underline" href={`/recommendation${base}&order=${s.row.order_id}`}>{s.row.order_id}</Link></td>
+                  <td><Link className="underline" href={`/order${base}&order=${s.row.order_id}`}>{s.row.order_id}</Link></td>
                   <td>{s.row.order_date}</td>
                   <td>{s.row.category}{s.order.multi_size ? t(" (multi-size)", " (nhiều cỡ)") : ""}</td>
                   <td>{f.vnd(Number(s.row.order_value_vnd))}</td>
@@ -100,7 +103,7 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
                     {s.order.customer_return_rate_in_data === null ? "-" : f.pct(s.order.customer_return_rate_in_data)}</td>
                   <td>{h ? `${f.pct(h.rate)} ${t("of", "trên")} ${f.n(h.n)}` : "-"}</td>
                   <td>{s.row.address}, {s.order.estimated_delivery_distance_km} km</td>
-                  <td><Link className="underline" href={`/prediction${base}&order=${s.row.order_id}`}>{f.pct(s.r.predReturnProb)}</Link></td>
+                  <td><Link className="underline" href={`/order${base}&order=${s.row.order_id}`}>{f.pct(s.r.predReturnProb)}</Link></td>
                   <td>{f.n(s.r.rvs, 1)}</td>
                   <td>{s.r.recommendation}</td>
                 </tr>

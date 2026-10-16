@@ -21,11 +21,11 @@ const EXAMPLE: Order = {
 
 export default function Landing() {
   return (
-    <div className="min-h-screen w-full bg-[#0b1f17] text-[#e8f3ec]">
-      <Suspense fallback={<p className="p-6">…</p>}>
+    <main className="mx-auto max-w-5xl p-6">
+      <Suspense fallback={<p>…</p>}>
         <Content />
       </Suspense>
-    </div>
+    </main>
   );
 }
 
@@ -49,64 +49,63 @@ async function Content() {
   return (
     <>
       {/* Header */}
-      <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-5">
+      <header className="flex flex-wrap items-center justify-between gap-3 py-3">
         <Link href="/" className="flex items-center gap-2 text-lg font-bold">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#b8f35c] text-[#0b1f17]">↻</span>
           ReLoop AI
         </Link>
-        <nav className="hidden gap-6 text-sm text-[#a9c7b5] md:flex">
-          <a href="#how" className="hover:text-white">{t("How it works", "Cách hoạt động")}</a>
-          <a href="#features" className="hover:text-white">{t("Features", "Tính năng")}</a>
-          <a href="#results" className="hover:text-white">{t("Results", "Kết quả")}</a>
-          <a href="#pricing" className="hover:text-white">{t("Pricing", "Bảng giá")}</a>
-          <a href="#team" className="hover:text-white">{t("Team", "Đội ngũ")}</a>
+        <nav className="flex flex-wrap gap-4 text-sm">
+          <a href="#how" className="underline">{t("How it works", "Cách hoạt động")}</a>
+          <a href="#features" className="underline">{t("Features", "Tính năng")}</a>
+          <a href="#results" className="underline">{t("Results", "Kết quả")}</a>
+          <a href="#pricing" className="underline">{t("Pricing", "Bảng giá")}</a>
+          <a href="#team" className="underline">{t("Team", "Đội ngũ")}</a>
         </nav>
         <div className="flex items-center gap-3">
           <LangSwitch lang={lang} />
-          <Link href={cta} className="rounded-full bg-[#b8f35c] px-4 py-2 text-sm font-semibold text-[#0b1f17] hover:bg-[#cdfa86]">
+          <Link href={cta} className="rounded border px-3 py-1 text-sm">
             {user ? t("Open app", "Mở ứng dụng") : t("Log in", "Đăng nhập")}
           </Link>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="mx-auto grid max-w-6xl items-center gap-10 px-6 pb-16 pt-8 md:grid-cols-2">
+      <section className="grid items-center gap-10 py-6 md:grid-cols-2">
         <div>
-          <p className="mb-4 inline-block rounded-full border border-[#2f5a45] px-3 py-1 text-xs uppercase tracking-wider text-[#b8f35c]">
+          <p className="mb-4 inline-block rounded border px-3 py-1 text-xs">
             {t("AI decision intelligence for e-commerce packaging · Vietnam", "AI ra quyết định bao bì cho thương mại điện tử · Việt Nam")}
           </p>
-          <h1 className="text-4xl font-extrabold leading-tight md:text-6xl">
+          <h1 className="text-3xl font-bold">
             {t("Predict the return.", "Dự đoán hoàn hàng.")}<br />
-            <span className="text-[#b8f35c]">{t("Choose the right package.", "Chọn đúng bao bì.")}</span>
+            <span>{t("Choose the right package.", "Chọn đúng bao bì.")}</span>
           </h1>
-          <p className="mt-5 max-w-xl text-lg text-[#bcd6c6]">
+          <p className="mt-3">
             {t("ReLoop AI decides, order by order, whether a reusable pack or a single-use pack makes sense — so fashion brands cut single-use packaging without paying more for it. We sell decisions, not packaging.",
                "ReLoop AI quyết định cho từng đơn hàng nên dùng bao bì tái sử dụng hay dùng một lần — giúp thương hiệu thời trang giảm bao bì dùng một lần mà không tốn thêm chi phí. Chúng tôi bán quyết định, không bán bao bì.")}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href={cta} className="rounded-full bg-[#b8f35c] px-6 py-3 font-semibold text-[#0b1f17] hover:bg-[#cdfa86]">{ctaLabel} →</Link>
-            <a href="#how" className="rounded-full border border-[#2f5a45] px-6 py-3 font-semibold hover:border-[#b8f35c]">{t("See how it works", "Xem cách hoạt động")}</a>
+            <Link href={cta} className="rounded border px-3 py-1 font-semibold">{ctaLabel} →</Link>
+            <a href="#how" className="rounded border px-3 py-1">{t("See how it works", "Xem cách hoạt động")}</a>
           </div>
           {!user && (
-            <p className="mt-4 text-sm text-[#8fb19d]">
-              {t("Demo account", "Tài khoản demo")}: <b className="text-white">demo@reloop.app</b> / <b className="text-white">reloop</b>
+            <p className="mt-4 text-sm">
+              {t("Demo account", "Tài khoản demo")}: <b >demo@reloop.app</b> / <b >reloop</b>
             </p>
           )}
         </div>
 
         {/* Live example: same order, two return channels */}
-        <div className="rounded-2xl border border-[#24493a] bg-[#11291f] p-5 shadow-2xl">
-          <p className="text-xs uppercase tracking-wider text-[#8fb19d]">{t("Live example · computed by the ReLoop engine", "Ví dụ trực tiếp · tính bởi ReLoop")}</p>
-          <p className="mt-2 text-sm text-[#bcd6c6]">
+        <div className="rounded border p-3">
+          <p className="text-xs text-gray-500">{t("Live example · computed by the ReLoop engine", "Ví dụ trực tiếp · tính bởi ReLoop")}</p>
+          <p className="mt-2 text-sm text-gray-500">
             {t("Dress · COD · bought in 2 sizes · voucher · returning customer (33% past returns) · 12 km",
                "Váy · COD · mua 2 cỡ · dùng voucher · khách quay lại (đã hoàn 33%) · 12 km")}
           </p>
-          <p className="mt-3 text-3xl font-bold">{t("Return probability", "Xác suất hoàn hàng")} <span className="text-[#b8f35c]">{f.pct(drop.predReturnProb)}</span></p>
+          <p className="mt-3 text-2xl font-bold">{t("Return probability", "Xác suất hoàn hàng")} <span>{f.pct(drop.predReturnProb)}</span></p>
           <div className="mt-4 grid grid-cols-2 gap-3">
             <ResultCard t={t} f={f} title={t("Pack comes back by drop-off", "Khách tự gửi trả bao bì")} r={drop} />
             <ResultCard t={t} f={f} title={t("Courier picks up the empty pack", "Shipper đến lấy bao bì rỗng")} r={courier} />
           </div>
-          <p className="mt-4 text-xs text-[#8fb19d]">
+          <p className="mt-4 text-xs">
             {t("Same order, different answer: whether reusable pays depends on how the pack comes back. That is why one policy for all orders fails.",
                "Cùng một đơn, kết quả khác nhau: bao bì tái sử dụng có lợi hay không phụ thuộc vào cách bao bì quay về. Vì vậy một chính sách chung cho mọi đơn sẽ thất bại.")}
           </p>
@@ -114,11 +113,11 @@ async function Content() {
       </section>
 
       {/* Problem */}
-      <section className="border-y border-[#1d3d30] bg-[#0e241b]">
-        <div className="mx-auto grid max-w-6xl gap-6 px-6 py-14 md:grid-cols-3">
+      <section className="border-t">
+        <div className="mx-auto grid max-w-6xl gap-6 py-8 md:grid-cols-3">
           <div className="md:col-span-1">
-            <h2 className="text-3xl font-bold">{t("Reusable isn't automatically better.", "Tái sử dụng không tự động tốt hơn.")}</h2>
-            <p className="mt-3 text-[#bcd6c6]">
+            <h2 className="text-2xl font-bold">{t("Reusable isn't automatically better.", "Tái sử dụng không tự động tốt hơn.")}</h2>
+            <p className="mt-3">
               {t("Brands want less single-use packaging, but sending a courier back for every empty pack can cost more than the pack itself.",
                  "Thương hiệu muốn giảm bao bì dùng một lần, nhưng cho shipper quay lại lấy từng bao bì rỗng có thể tốn hơn chính bao bì đó.")}
             </p>
@@ -130,9 +129,9 @@ async function Content() {
       </section>
 
       {/* One flow */}
-      <section id="how" className="mx-auto max-w-6xl px-6 py-16">
-        <p className="text-sm uppercase tracking-wider text-[#b8f35c]">{t("The one flow", "Một quy trình duy nhất")}</p>
-        <h2 className="mt-2 text-3xl font-bold md:text-4xl">{t("From today's orders to the packing list in four steps", "Từ đơn hàng hôm nay đến danh sách đóng gói trong bốn bước")}</h2>
+      <section id="how" className="py-8">
+        <p className="text-sm">{t("The one flow", "Một quy trình duy nhất")}</p>
+        <h2 className="mt-2 text-2xl font-bold">{t("From today's orders to the packing list in four steps", "Từ đơn hàng hôm nay đến danh sách đóng gói trong bốn bước")}</h2>
         <div className="mt-10 grid gap-4 md:grid-cols-4">
           {[
             [t("Upload orders", "Tải đơn hàng lên"), t("CSV export from any system, or our API. No integration needed to start.", "Xuất CSV từ bất kỳ hệ thống nào, hoặc dùng API. Không cần tích hợp để bắt đầu.")],
@@ -141,10 +140,10 @@ async function Content() {
               `Điểm khả thi tái sử dụng = ${f.pct(w.cost)} lợi thế chi phí + ${f.pct(w.pack_return)} khả năng bao bì quay về + ${f.pct(w.cycles)} số vòng tái sử dụng. ≥70 REUSABLE, 40–69 REVIEW, <40 SINGLE-USE.`)],
             [t("Packers get the list", "Đội đóng gói nhận danh sách")],
           ].map(([title, body], i) => (
-            <div key={title} className="rounded-2xl border border-[#24493a] bg-[#11291f] p-5">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#b8f35c] font-bold text-[#0b1f17]">{i + 1}</span>
-              <h3 className="mt-4 text-lg font-semibold">{title}</h3>
-              <p className="mt-2 text-sm text-[#bcd6c6]">{body ?? t("Download the REUSABLE list as CSV, one instruction per order. A guardrail never recommends reusable when it costs more.",
+            <div key={title} className="rounded border p-3">
+              <span className="font-bold">{i + 1}.</span>
+              <h3 className="font-semibold">{title}</h3>
+              <p className="mt-2 text-sm text-gray-500">{body ?? t("Download the REUSABLE list as CSV, one instruction per order. A guardrail never recommends reusable when it costs more.",
                 "Tải danh sách REUSABLE dạng CSV, mỗi đơn một chỉ dẫn. Cơ chế bảo vệ không bao giờ đề xuất tái sử dụng khi nó đắt hơn.")}</p>
             </div>
           ))}
@@ -152,14 +151,14 @@ async function Content() {
       </section>
 
       {/* Features */}
-      <section id="features" className="bg-[#0e241b]">
-        <div className="mx-auto max-w-6xl px-6 py-16">
-          <h2 className="text-3xl font-bold md:text-4xl">{t("Everything in one platform", "Tất cả trong một nền tảng")}</h2>
+      <section id="features">
+        <div className="py-8">
+          <h2 className="text-2xl font-bold">{t("Everything in one platform", "Tất cả trong một nền tảng")}</h2>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[
               [t("Dashboard & pilot targets", "Tổng quan & mục tiêu thí điểm"), t("Recommendations, cost vs all single-use, packs avoided, and progress against the pilot targets.", "Đề xuất, chi phí so với toàn bộ dùng một lần, bao bì được tránh và tiến độ so với mục tiêu thí điểm.")],
               [t("AI prediction you can explain", "Dự đoán AI có thể giải thích"), t("Every order shows which factors raised or lowered its return probability.", "Mỗi đơn cho thấy yếu tố nào làm tăng hoặc giảm xác suất hoàn hàng.")],
-              [t("Check one order", "Kiểm tra một đơn"), t("Type in a single order and get the prediction, score and recommendation instantly.", "Nhập một đơn hàng và nhận ngay dự đoán, điểm và đề xuất.")],
+              [t("Score a new order", "Chấm điểm đơn mới"), t("Type in a single order and get the prediction, score and recommendation instantly.", "Nhập một đơn hàng và nhận ngay dự đoán, điểm và đề xuất.")],
               [t("Scenario simulator", "Mô phỏng kịch bản"), t("Compare 10–40% reusable: cost, packs avoided and bags lost, RVS vs random selection.", "So sánh 10–40% tái sử dụng: chi phí, bao bì được tránh và túi bị mất, RVS so với chọn ngẫu nhiên.")],
               [t("Your own costs", "Chi phí của riêng bạn"), t("Brand presets or your own pack prices, courier tariffs and return channel.", "Mẫu theo loại thương hiệu hoặc giá bao bì, cước vận chuyển và kênh thu hồi của riêng bạn.")],
               [t("Custom AI model", "Mô hình AI riêng"), t("Retrain the return model on your own history in one click, with fairness by group and wrong cases shown.", "Huấn luyện lại mô hình bằng lịch sử của bạn chỉ với một cú nhấp, kèm đánh giá công bằng theo nhóm và các trường hợp sai.")],
@@ -167,9 +166,9 @@ async function Content() {
               [t("AI assistant", "Trợ lý AI"), t("Ask why an order got its recommendation. Answers only from ReLoop's numbers, with an automatic number check.", "Hỏi vì sao một đơn nhận đề xuất đó. Chỉ trả lời từ số liệu của ReLoop, có kiểm tra số tự động.")],
               [t("API & CSV", "API & CSV"), t("Plug into an order system through the API, or work with CSV files as plan B.", "Kết nối hệ thống đơn hàng qua API, hoặc dùng tệp CSV làm phương án dự phòng.")],
             ].map(([title, body]) => (
-              <div key={title} className="rounded-2xl border border-[#24493a] bg-[#11291f] p-5">
-                <h3 className="font-semibold text-[#b8f35c]">{title}</h3>
-                <p className="mt-2 text-sm text-[#bcd6c6]">{body}</p>
+              <div key={title} className="rounded border p-3">
+                <h3 className="font-semibold">{title}</h3>
+                <p className="mt-2 text-sm text-gray-500">{body}</p>
               </div>
             ))}
           </div>
@@ -177,9 +176,9 @@ async function Content() {
       </section>
 
       {/* Results */}
-      <section id="results" className="mx-auto max-w-6xl px-6 py-16">
-        <h2 className="text-3xl font-bold md:text-4xl">{t("What the simulator shows", "Kết quả từ bộ mô phỏng")}</h2>
-        <p className="mt-2 text-sm text-[#8fb19d]">
+      <section id="results" className="py-8">
+        <h2 className="text-2xl font-bold">{t("What the simulator shows", "Kết quả từ bộ mô phỏng")}</h2>
+        <p className="mt-2 text-sm text-gray-500">
           {t("5,000 simulated orders, sourced Vietnamese costs, apparel-size mailer. Simulated data, not pilot results.",
              "5.000 đơn mô phỏng, chi phí có nguồn tại Việt Nam, túi gói hàng cỡ quần áo. Dữ liệu mô phỏng, không phải kết quả thí điểm.")}
         </p>
@@ -190,27 +189,27 @@ async function Content() {
           <BigStat value={metrics.auc_model ? `${f.n(metrics.auc_model, 2)} vs ${f.n(metrics.auc_baseline_category_mean, 2)}` : "-"}
             label={t("return model AUC vs a category-only baseline, on newer orders", "AUC của mô hình so với mốc chỉ theo danh mục, trên các đơn mới hơn")} />
         </div>
-        <div className="mt-6 rounded-2xl border border-[#24493a] p-5 text-sm text-[#bcd6c6]">
-          <b className="text-white">{t("Honest limits", "Giới hạn được nêu rõ")}: </b>
+        <div className="mt-6 rounded border p-5 text-sm">
+          <b >{t("Honest limits", "Giới hạn được nêu rõ")}: </b>
           {t("CO₂ is not estimated yet (no sourced emission factor). EPR credits are excluded. Lost reusable bags are counted as waste. The 50% drop-off return rate is an assumption the pilot will measure.",
              "CO₂ chưa được ước tính (chưa có hệ số phát thải có nguồn). Không tính tín chỉ EPR. Túi tái sử dụng bị mất được tính là rác thải. Tỷ lệ khách tự gửi trả 50% là giả định sẽ được đo trong thí điểm.")}
         </div>
       </section>
 
       {/* Roadmap + targets */}
-      <section className="bg-[#0e241b]">
-        <div className="mx-auto max-w-6xl px-6 py-16">
-          <h2 className="text-3xl font-bold md:text-4xl">{t("A 12-month pilot with clear gates", "Thí điểm 12 tháng với các mốc rõ ràng")}</h2>
+      <section>
+        <div className="py-8">
+          <h2 className="text-2xl font-bold">{t("A 12-month pilot with clear gates", "Thí điểm 12 tháng với các mốc rõ ràng")}</h2>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {[
               ["M1–3", t("Historical-data pilot", "Thí điểm trên dữ liệu lịch sử"), t("Shadow mode: score the brand's past orders and compare with what really happened.", "Chế độ chạy song song: chấm điểm đơn cũ của thương hiệu và so với thực tế.")],
               ["M4–6", t("Live API + channel test", "API trực tiếp + thử kênh thu hồi"), t("Real orders, capped share, measure how many packs come back without a courier.", "Đơn thật, giới hạn tỷ lệ, đo số bao bì quay về không cần shipper.")],
               ["M7–12", t("Retrain & scale", "Huấn luyện lại & mở rộng"), t("Retrain on real outcomes, then add warehouses and brands — only if the gates are met.", "Huấn luyện lại trên kết quả thật, rồi mở rộng kho và thương hiệu — chỉ khi đạt các mốc.")],
             ].map(([m, title, body]) => (
-              <div key={m} className="rounded-2xl border border-[#24493a] bg-[#11291f] p-5">
-                <p className="text-sm font-bold text-[#b8f35c]">{m}</p>
+              <div key={m} className="rounded border p-3">
+                <p className="text-sm font-bold">{m}</p>
                 <h3 className="mt-1 font-semibold">{title}</h3>
-                <p className="mt-2 text-sm text-[#bcd6c6]">{body}</p>
+                <p className="mt-2 text-sm text-gray-500">{body}</p>
               </div>
             ))}
           </div>
@@ -224,31 +223,31 @@ async function Content() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="mx-auto max-w-6xl px-6 py-16">
-        <h2 className="text-3xl font-bold md:text-4xl">{t("Simple SaaS pricing", "Bảng giá SaaS đơn giản")}</h2>
+      <section id="pricing" className="py-8">
+        <h2 className="text-2xl font-bold">{t("Simple SaaS pricing", "Bảng giá SaaS đơn giản")}</h2>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {[
             ["Starter", "3M", t("One brand, CSV workflow, dashboard, simulator and report.", "Một thương hiệu, quy trình CSV, tổng quan, mô phỏng và báo cáo.")],
             ["Growth", "7M", t("API integration, custom AI model, multiple data sets.", "Tích hợp API, mô hình AI riêng, nhiều bộ dữ liệu.")],
             ["Enterprise", "15M", t("Multi-warehouse, scheduled retraining, priority support.", "Nhiều kho, huấn luyện lại định kỳ, hỗ trợ ưu tiên.")],
           ].map(([name, price, body], i) => (
-            <div key={name} className={`rounded-2xl border p-6 ${i === 1 ? "border-[#b8f35c] bg-[#11291f]" : "border-[#24493a]"}`}>
+            <div key={name} className="rounded border p-4">
               <h3 className="font-semibold">{name}</h3>
-              <p className="mt-3 text-4xl font-extrabold">{price} <span className="text-base font-normal text-[#8fb19d]">VND / {t("month", "tháng")}</span></p>
-              <p className="mt-3 text-sm text-[#bcd6c6]">{body}</p>
+              <p className="mt-3 text-2xl font-bold">{price} <span className="text-base font-normal">VND / {t("month", "tháng")}</span></p>
+              <p className="mt-3 text-sm">{body}</p>
             </div>
           ))}
         </div>
-        <p className="mt-4 text-sm text-[#8fb19d]">
+        <p className="mt-4 text-sm">
           {t("Plus a one-time 15M VND integration fee. Add-ons: premium ESG/EPR reports, custom models, consulting. Planning prices, not signed contracts.",
              "Cộng phí tích hợp một lần 15 triệu VND. Dịch vụ thêm: báo cáo ESG/EPR nâng cao, mô hình riêng, tư vấn. Giá dự kiến, chưa phải hợp đồng đã ký.")}
         </p>
       </section>
 
       {/* Team */}
-      <section id="team" className="bg-[#0e241b]">
-        <div className="mx-auto max-w-6xl px-6 py-16">
-          <h2 className="text-3xl font-bold md:text-4xl">{t("The Loopies", "Đội Loopies")}</h2>
+      <section id="team">
+        <div className="py-8">
+          <h2 className="text-2xl font-bold">{t("The Loopies", "Đội Loopies")}</h2>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
               ["Diva Meilla Sinaga, S.M.", t("Business development & partnerships", "Phát triển kinh doanh & đối tác")],
@@ -256,9 +255,9 @@ async function Content() {
               ["Aisha Nasywa Emiliana, S.T.", t("Operations & recovery system", "Vận hành & hệ thống thu hồi")],
               ["I Ketut Veda Suputra, S.Kom.", t("AI, website, data & product", "AI, website, dữ liệu & sản phẩm")],
             ].map(([name, role]) => (
-              <div key={name} className="rounded-2xl border border-[#24493a] bg-[#11291f] p-5">
+              <div key={name} className="rounded border p-3">
                 <p className="font-semibold">{name}</p>
-                <p className="mt-1 text-sm text-[#bcd6c6]">{role}</p>
+                <p className="mt-1 text-sm">{role}</p>
               </div>
             ))}
           </div>
@@ -266,16 +265,16 @@ async function Content() {
       </section>
 
       {/* Closing CTA */}
-      <section className="mx-auto max-w-6xl px-6 py-20 text-center">
-        <h2 className="text-3xl font-bold md:text-5xl">{t("The right package for every order.", "Đúng bao bì cho mọi đơn hàng.")}</h2>
-        <p className="mx-auto mt-4 max-w-2xl text-[#bcd6c6]">
+      <section className="py-8 text-center">
+        <h2 className="text-2xl font-bold">{t("The right package for every order.", "Đúng bao bì cho mọi đơn hàng.")}</h2>
+        <p className="mx-auto mt-4 max-w-2xl">
           {t("Open the working prototype: upload orders, see the predictions, download the packing list.", "Mở bản mẫu đang chạy: tải đơn hàng lên, xem dự đoán, tải danh sách đóng gói.")}
         </p>
-        <Link href={cta} className="mt-8 inline-block rounded-full bg-[#b8f35c] px-8 py-4 text-lg font-semibold text-[#0b1f17] hover:bg-[#cdfa86]">{ctaLabel} →</Link>
+        <Link href={cta} className="mt-4 inline-block rounded border px-3 py-1 font-semibold">{ctaLabel} →</Link>
       </section>
 
-      <footer className="border-t border-[#1d3d30]">
-        <div className="mx-auto flex max-w-6xl flex-wrap justify-between gap-3 px-6 py-6 text-xs text-[#8fb19d]">
+      <footer className="border-t mt-8">
+        <div className="flex flex-wrap justify-between gap-3 py-4 text-xs">
           <p>ReLoop AI · UEH Business Challenge 2026 · {t("All demo data is simulated.", "Toàn bộ dữ liệu demo là dữ liệu mô phỏng.")}</p>
           <Link href="/privacy" className="underline">{t("Data & Privacy", "Dữ liệu & Quyền riêng tư")}</Link>
         </div>
@@ -286,21 +285,20 @@ async function Content() {
 
 function BigStat({ value, label }: { value: string; label: string }) {
   return (
-    <div className="rounded-2xl border border-[#24493a] bg-[#11291f] p-5">
-      <p className="text-3xl font-extrabold text-[#b8f35c]">{value}</p>
-      <p className="mt-2 text-sm text-[#bcd6c6]">{label}</p>
+    <div className="rounded border p-3">
+      <p className="text-2xl font-bold">{value}</p>
+      <p className="mt-2 text-sm text-gray-500">{label}</p>
     </div>
   );
 }
 
 function ResultCard({ t, f, title, r }: { t: T; f: Fmt; title: string; r: ReturnType<typeof scoreOrder> }) {
-  const good = r.recommendation === "REUSABLE";
   return (
-    <div className={`rounded-xl border p-3 ${good ? "border-[#b8f35c]" : "border-[#4a2f2f]"}`}>
-      <p className="text-xs text-[#8fb19d]">{title}</p>
-      <p className={`mt-1 text-lg font-bold ${good ? "text-[#b8f35c]" : "text-[#ff9b8a]"}`}>{r.recommendation}</p>
-      <p className="text-xs text-[#bcd6c6]">RVS {f.n(r.rvs, 1)}</p>
-      <p className="mt-1 text-xs text-[#bcd6c6]">{t("Reusable", "Tái sử dụng")} {f.vnd(r.expCostReusableVnd)}<br />{t("Single-use", "Dùng một lần")} {f.vnd(r.expCostSingleVnd)}</p>
+    <div className="rounded border p-3">
+      <p className="text-xs">{title}</p>
+      <p className="mt-1 text-lg font-bold">{r.recommendation}</p>
+      <p className="text-xs">RVS {f.n(r.rvs, 1)}</p>
+      <p className="mt-1 text-xs">{t("Reusable", "Tái sử dụng")} {f.vnd(r.expCostReusableVnd)}<br />{t("Single-use", "Dùng một lần")} {f.vnd(r.expCostSingleVnd)}</p>
     </div>
   );
 }

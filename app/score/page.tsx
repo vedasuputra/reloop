@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
+import Link from "next/link";
 import Nav from "@/components/Nav";
 import { getOrgs, getCostSettings, getOrgModel, DEMO_ORG } from "@/lib/context";
 import { readSettings, settingsFromConfig, model as baseModel, PRESETS, CUSTOM_PRESET, type Params } from "@/lib/data";
@@ -11,7 +12,7 @@ import { createClient } from "@/lib/supabase/server";
 const CATEGORIES = ["Accessories", "Activewear", "Dress", "Jeans", "Outerwear", "Shirt", "T-shirt", "Trousers"];
 const PAYMENTS = ["COD", "Bank transfer", "E-wallet", "Credit/debit card"];
 
-export const metadata = { title: "Check One Order" };
+export const metadata = { title: "Score a New Order" };
 
 export default function ScoreOne({ searchParams }: { searchParams: Promise<Params> }) {
   return (
@@ -80,7 +81,8 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   return (
     <>
       <Nav qs={qs} email={user?.email} />
-      <h1 className="text-2xl font-bold mb-1">{t("Check One Order", "Kiểm tra một đơn")}</h1>
+      <p className="text-sm mb-2"><Link className="underline" href={`/orders${qs}`}>← {t("All orders", "Tất cả đơn hàng")}</Link></p>
+      <h1 className="text-2xl font-bold mb-1">{t("Score a new order", "Chấm điểm đơn mới")}</h1>
       <p className="text-sm text-gray-500 mb-4">
         {t("Fill in one order and ReLoop calculates its return probability and packaging recommendation. Nothing is saved.",
            "Nhập thông tin một đơn hàng, ReLoop sẽ tính xác suất hoàn hàng và đề xuất bao bì. Không có dữ liệu nào được lưu.")}

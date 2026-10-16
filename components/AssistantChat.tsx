@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Msg = { role: "user" | "assistant"; text: string; source?: string };
 
@@ -43,6 +43,13 @@ const TXT = {
 export default function AssistantChat({ org, preset, method, lang }: { org: string; preset: string; method: string; lang: "en" | "vi" }) {
   const L = TXT[lang];
   const [msgs, setMsgs] = useState<Msg[]>([]);
+  // Keep the conversation while the user moves between pages (this browser tab only)
+  useEffect(() => {
+    try { const saved = sessionStorage.getItem("reloop-chat"); if (saved) setMsgs(JSON.parse(saved)); } catch {}
+  }, []);
+  useEffect(() => {
+    try { sessionStorage.setItem("reloop-chat", JSON.stringify(msgs.slice(-20))); } catch {}
+  }, [msgs]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -69,7 +76,7 @@ export default function AssistantChat({ org, preset, method, lang }: { org: stri
 
   return (
     <div className="space-y-4">
-      <div className="space-y-3 min-h-40">
+      <div className="space-y-3 min-h-40 max-h-[55vh] overflow-y-auto">
         {msgs.length === 0 && (
           <div className="text-sm space-y-2">
             <p className="text-gray-500">{L.examples}</p>
@@ -81,7 +88,7 @@ export default function AssistantChat({ org, preset, method, lang }: { org: stri
           </div>
         )}
         {msgs.map((m, i) => (
-          <div key={i} className={`rounded border p-3 text-sm whitespace-pre-wrap ${m.role === "user" ? "ml-10" : "mr-10"}`}>
+          <div key={i} className={`rounded border p-3 text-sm whitespace-pre-wrap ${m.role === "user" ? "ml-6" : "mr-6"}`}>
             <p className="text-xs text-gray-500 mb-1">
               {m.role === "user" ? L.you : m.source === "rules" ? L.rules : m.source === "checked" ? L.checked : L.ai}
             </p>

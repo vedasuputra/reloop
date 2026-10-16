@@ -29,7 +29,9 @@ COSTS (reference values; each brand can enter its own on "Cost Settings")
 - Brand presets: Low-cost packaging, Clothing-size reference, Premium brand (logo mailer), Premium brand (box).
 
 APP SCREENS
-- Dashboard, Order Analysis (with CSV download for the packing team), AI Prediction, Recommendation, Check One Order (score a single order), Scenario Simulator (10-40% reusable), Sustainability Report (packs and plastic avoided, illustrative EPR), AI Model (retrain), AI Assistant, Upload CSV, Cost Settings, API Integration (POST /api/score).
+- Main menu: Dashboard (overview + pilot targets), Orders (list of orders with CSV download for the packing team; click an order for its detail page with the return prediction, the factors behind it, the RVS breakdown and cost; "+ Score a new order" to type in a single order), Simulator (10-40% reusable, RVS vs random), Report (sustainability: packs and plastic avoided, illustrative EPR), AI Model (retrain on own data, fairness by group, wrong cases).
+- Settings menu: Upload data (CSV), Cost settings, API integration (POST /api/score). Footer: Data & Privacy.
+- AI assistant: the "Ask AI" button in the bottom-right corner of every page.
 - The app is available in English and Vietnamese (EN/VI switch at the top).
 
 LIMITS (say these honestly when relevant)
