@@ -1,0 +1,21 @@
+order_id,customer_id,address,order_date,category,quantity_of_item,order_value_vnd,multi_size,payment_method,voucher_used,estimated_delivery_distance_km,order_status,past_delivered_in_data,customer_return_rate_in_data,was_returned
+CONTOH-001,C01235,Hanoi,2023-01-15,Dress,2,595000,1,E-wallet,1,12,Delivered,0,,0.0
+CONTOH-002,C00243,Hanoi,2024-10-19,Shirt,1,426000,0,COD,0,22,Delivered,2,0.0,0.0
+CONTOH-003,C01180,Other Vietnam,2024-04-24,Shirt,3,1278000,0,COD,1,61,Delivered,3,0.333,0.0
+CONTOH-004,C00618,Khanh Hoa,2023-02-11,Activewear,2,696000,0,COD,0,67,Delivered,0,,1.0
+CONTOH-005,C01306,Other Vietnam,2024-11-17,T-shirt,2,252000,0,E-wallet,0,55,Delivered,2,0.0,0.0
+CONTOH-006,C01002,Can Tho,2024-01-02,Accessories,2,164000,0,Credit/debit card,0,35,Delivered,1,1.0,1.0
+CONTOH-007,C02106,Ho Chi Minh City,2024-02-07,Trousers,1,632000,0,COD,1,17,Delivered,2,0.0,0.0
+CONTOH-008,C01791,Nghe An,2023-05-27,Activewear,3,1821000,0,COD,0,66,Delivered,0,,0.0
+CONTOH-009,C01456,Khanh Hoa,2024-04-03,Trousers,3,1140000,0,COD,0,60,Delivered,2,0.0,0.0
+CONTOH-010,C00183,Ho Chi Minh City,2023-08-24,Outerwear,2,2014000,0,Bank transfer,1,18,Delivered,0,,0.0
+CONTOH-011,C00510,Hai Phong,2023-09-14,Jeans,1,805000,0,COD,0,18,Cancelled,0,,
+CONTOH-012,C01334,Can Tho,2024-03-12,Activewear,1,215000,0,COD,0,42,Delivered,1,0.0,0.0
+CONTOH-013,C00807,Other Vietnam,2023-01-08,Trousers,3,1398000,0,Bank transfer,1,69,Delivered,0,,1.0
+CONTOH-014,C01902,Bac Ninh,2024-11-17,Dress,1,645000,0,E-wallet,0,5,Delivered,3,0.0,0.0
+CONTOH-015,C01677,Ho Chi Minh City,2023-04-25,Jeans,3,1616000,0,COD,1,25,Delivered,0,,1.0
+CONTOH-016,C00630,Ho Chi Minh City,2024-03-21,Shirt,1,308000,0,COD,0,22,Delivered,1,0.0,0.0
+CONTOH-017,C01894,Can Tho,2024-02-19,Outerwear,3,2796000,1,E-wallet,0,40,Delivered,1,0.0,0.0
+CONTOH-018,C01005,Other Vietnam,2023-12-20,Shirt,1,363000,1,E-wallet,1,91,Delivered,4,0.25,1.0
+CONTOH-019,C00223,Da Nang,2024-10-16,Trousers,2,792000,0,E-wallet,0,57,Delivered,2,0.0,0.0
+CONTOH-020,C00668,Bac Ninh,2024-01-24,Dress,1,589000,0,Credit/debit card,0,26,Delivered,0,,0.0
