@@ -1,6 +1,7 @@
 import type { Scored } from "@/lib/data";
 import type { Config, CollectionMethod } from "@/lib/rvs";
 import { categoryReturnRates, type Row } from "@/lib/data";
+import { KNOWLEDGE } from "@/lib/knowledge";
 
 /**
  * AI assistant helpers. ReLoop computes every number; the language model only explains them.
@@ -69,9 +70,19 @@ export function buildFacts(question: string, scored: Scored[], rows: Row[], cfg:
 }
 
 export const SYSTEM_PROMPT = `You are the ReLoop AI assistant inside a B2B app that recommends reusable or single-use packaging for e-commerce orders in Vietnam.
-Answer ONLY from the FACTS block. Never invent numbers, orders, sources or features. If the facts do not contain the answer, say so and suggest which screen of the app to open (Dashboard, Order Analysis, AI Prediction, Recommendation, Check One Order, Scenario Simulator, Sustainability Report, AI Model, Cost Settings).
-Explain in plain words for a business user. Keep answers short (at most about 150 words). Answer in the language of the question (Indonesian, English or Vietnamese).
-Remind the user the data is simulated only when it matters for the answer.`;
+
+RULES
+1. Use ONLY the KNOWLEDGE below and the FACTS sent with each question. Never use outside knowledge about other companies, markets, laws or prices.
+2. Every number in your answer must appear in the FACTS or KNOWLEDGE. Copy numbers exactly; do not round them into new numbers, do not estimate, do not calculate new totals.
+3. If the answer is not in the FACTS or KNOWLEDGE, say plainly that ReLoop does not have that information, and point to the screen of the app where the user can look or enter it.
+4. Never change, guess or "improve" a recommendation or score. ReLoop's numbers are final; you only explain them.
+5. Only discuss ReLoop, its data, packaging, returns and the app. Politely decline other topics.
+6. Keep answers short (at most about 150 words), plain words for a business user, in the language of the question (Indonesian, English or Vietnamese).
+7. Mention that data is simulated or that CO2/EPR is not estimated whenever the answer depends on it.
+8. For greetings or small talk, reply in one or two sentences and suggest what the user can ask; do not list statistics unless asked.
+
+KNOWLEDGE
+${KNOWLEDGE}`;
 
 /** Template answer used when the language model is unavailable. */
 export function ruleAnswer(question: string, scored: Scored[], order: Scored | null): string {
@@ -106,7 +117,7 @@ export function ruleAnswer(question: string, scored: Scored[], order: Scored | n
 export async function askGemini(question: string, facts: string, history: { role: "user" | "assistant"; text: string }[]): Promise<string | null> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return null;
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+  const model = process.env.GEMINI_MODEL || "gemini-3.8-flash";
   const contents = [
     ...history.slice(-6).map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.text.slice(0, 2000) }] })),
     { role: "user", parts: [{ text: `FACTS:\n${facts}\n\nQUESTION: ${question}` }] },
@@ -119,12 +130,14 @@ export async function askGemini(question: string, facts: string, history: { role
         systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
         contents,
         generationConfig: {
-          temperature: 0.2, maxOutputTokens: 800,
+          temperature: 0.2, maxOutputTokens: 2048, // room for the model's internal reasoning plus a short answer
           // 2.5 Flash "thinks" by default and spends output tokens on it; switch that off for short answers
           ...(model.startsWith("gemini-2.5-flash") ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
+          // Gemini 3.x: keep reasoning short so answers come back in a few seconds
+          ...(model.startsWith("gemini-3") ? { thinkingConfig: { thinkingLevel: "low" } } : {}),
         },
       }),
-      signal: AbortSignal.timeout(20000),
+      signal: AbortSignal.timeout(40000),
     });
     if (!res.ok) {
       console.error("Gemini error", res.status, (await res.text()).slice(0, 300));
@@ -137,4 +150,54 @@ export async function askGemini(question: string, facts: string, history: { role
     console.error("Gemini call failed", e);
     return null;
   }
+}
+
+/** Call Groq (free tier, OpenAI-style API, very fast). Returns null when there is no key or the call fails. */
+export async function askGroq(question: string, facts: string, history: { role: "user" | "assistant"; text: string }[]): Promise<string | null> {
+  const key = process.env.GROQ_API_KEY;
+  if (!key) return null;
+  const model = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+  try {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+      body: JSON.stringify({
+        model, temperature: 0.2, max_tokens: 800,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          ...history.slice(-6).map((m) => ({ role: m.role, content: m.text.slice(0, 2000) })),
+          { role: "user", content: `FACTS:\n${facts}\n\nQUESTION: ${question}` },
+        ],
+      }),
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!res.ok) {
+      console.error("Groq error", res.status, (await res.text()).slice(0, 300));
+      return null;
+    }
+    const data = await res.json();
+    return (data?.choices?.[0]?.message?.content ?? "").trim() || null;
+  } catch (e) {
+    console.error("Groq call failed", e);
+    return null;
+  }
+}
+
+/** Groq first (if its key is set), then Gemini, else null (the route falls back to rule answers). */
+export async function askAI(question: string, facts: string, history: { role: "user" | "assistant"; text: string }[]) {
+  return (await askGroq(question, facts, history)) ?? (await askGemini(question, facts, history));
+}
+
+/**
+ * Hallucination check: numbers in the AI answer that do not appear in the facts, knowledge or question.
+ * Small numbers (0-10) are ignored because they are usually counts or list steps.
+ */
+export function unverifiedNumbers(answer: string, ...sources: string[]): string[] {
+  const norm = (t: string) => t.replace(/[.,](?=\d{3}\b)/g, "").replace(",", ".");
+  const nums = (t: string) => (norm(t).match(/\d+(?:\.\d+)?/g) ?? []).map(Number);
+  const known = new Set<number>();
+  for (const src of sources) for (const n of nums(src)) {
+    known.add(n); known.add(Math.round(n)); known.add(Math.round(n * 10) / 10); known.add(Math.round(n * 100));
+  }
+  return [...new Set(nums(answer))].filter((n) => n > 10 && !known.has(n) && !known.has(Math.round(n * 10) / 10)).map(String);
 }

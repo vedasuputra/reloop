@@ -1,5 +1,5 @@
 import { loadContext } from "@/lib/context";
-import { buildFacts, askGemini, ruleAnswer } from "@/lib/assistant";
+import { buildFacts, askAI, ruleAnswer, unverifiedNumbers, SYSTEM_PROMPT } from "@/lib/assistant";
 import type { Params } from "@/lib/data";
 
 /** POST /assistant/ask  { question, history, org, preset, method } -> { answer, source } (login required). */
@@ -16,7 +16,13 @@ export async function POST(req: Request) {
   const orgName = orgs.find((o) => o.id === orgId)?.name ?? "data";
   const facts = buildFacts(question, scored, rows, cfg, method, modelLabel, orgName);
   const history = Array.isArray(body.history) ? body.history.filter((m: any) => typeof m?.text === "string") : [];
-  const ai = await askGemini(question, facts.text, history);
-  if (ai) return Response.json({ answer: ai, source: "ai" });
+  const ai = await askAI(question, facts.text, history);
+  if (ai) {
+    // If the AI wrote numbers ReLoop never gave it, do not show them: use the template answer instead.
+    const bad = unverifiedNumbers(ai, facts.text, SYSTEM_PROMPT, question); // the prompt already contains KNOWLEDGE and the rules
+    if (bad.length === 0) return Response.json({ answer: ai, source: "ai" });
+    console.warn("Assistant answer had unverified numbers:", bad.join(", "));
+    return Response.json({ answer: ruleAnswer(question, scored, facts.order), source: "checked" });
+  }
   return Response.json({ answer: ruleAnswer(question, scored, facts.order), source: "rules" });
 }

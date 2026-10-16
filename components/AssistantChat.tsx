@@ -52,7 +52,8 @@ export default function AssistantChat({ org, preset, method }: { org: string; pr
         {msgs.map((m, i) => (
           <div key={i} className={`rounded border p-3 text-sm whitespace-pre-wrap ${m.role === "user" ? "ml-10" : "mr-10"}`}>
             <p className="text-xs text-gray-500 mb-1">
-              {m.role === "user" ? "Kamu" : m.source === "rules" ? "ReLoop (jawaban otomatis, AI sedang tidak tersedia)" : "Asisten ReLoop"}
+              {m.role === "user" ? "Kamu" : m.source === "rules" ? "ReLoop (jawaban otomatis, AI sedang tidak tersedia)"
+                : m.source === "checked" ? "ReLoop (jawaban otomatis: jawaban AI berisi angka yang tidak bisa dicek)" : "Asisten ReLoop"}
             </p>
             {m.text}
           </div>
