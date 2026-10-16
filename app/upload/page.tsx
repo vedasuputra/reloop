@@ -9,6 +9,8 @@ import { uploadCsv, clearOrders } from "./actions";
 
 type SP = { org?: string; ok?: string; error?: string };
 
+export const metadata = { title: "Upload CSV" };
+
 export default function Upload({ searchParams }: { searchParams: Promise<SP> }) {
   return (
     <main className="mx-auto max-w-3xl p-6">

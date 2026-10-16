@@ -5,6 +5,8 @@ import DemoNote from "@/components/DemoNote";
 import LangSwitch from "@/components/LangSwitch";
 import { getT } from "@/lib/i18n";
 
+export const metadata = { title: "Log in" };
+
 export default function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   return (
     <main className="mx-auto max-w-sm p-8 space-y-6">

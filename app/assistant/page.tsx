@@ -8,6 +8,8 @@ import { readSettings, type Params } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
 import { getT } from "@/lib/i18n";
 
+export const metadata = { title: "AI Assistant" };
+
 export default function Assistant({ searchParams }: { searchParams: Promise<Params> }) {
   return (
     <main className="mx-auto max-w-3xl p-6">

@@ -11,6 +11,8 @@ import { createClient } from "@/lib/supabase/server";
 const CATEGORIES = ["Accessories", "Activewear", "Dress", "Jeans", "Outerwear", "Shirt", "T-shirt", "Trousers"];
 const PAYMENTS = ["COD", "Bank transfer", "E-wallet", "Credit/debit card"];
 
+export const metadata = { title: "Check One Order" };
+
 export default function ScoreOne({ searchParams }: { searchParams: Promise<Params> }) {
   return (
     <main className="mx-auto max-w-3xl p-6">

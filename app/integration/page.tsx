@@ -16,6 +16,8 @@ const EXAMPLE = {
   }],
 };
 
+export const metadata = { title: "API Integration" };
+
 export default function Integration() {
   return (
     <main className="mx-auto max-w-3xl p-6">

@@ -20,6 +20,8 @@ function factorLabel(t: T, k: string) {
   return L[k] ?? (k.startsWith("cat_") ? t(`Category ${k.slice(4)}`, `Danh mục ${k.slice(4)}`) : k);
 }
 
+export const metadata = { title: "AI Model" };
+
 export default function ModelPage({ searchParams }: { searchParams: Promise<Params> }) {
   return (
     <main className="mx-auto max-w-4xl p-6">

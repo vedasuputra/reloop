@@ -8,6 +8,8 @@ import { categoryReturnRates, type Params } from "@/lib/data";
 
 const PAGE_SIZE = 50;
 
+export const metadata = { title: "Order Analysis" };
+
 export default function Orders({ searchParams }: { searchParams: Promise<Params> }) {
   return (
     <main className="mx-auto max-w-6xl p-6">

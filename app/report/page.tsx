@@ -9,6 +9,8 @@ import { buildReport, MAILER_KG, REUSABLE_KG } from "@/lib/report";
 import type { Params } from "@/lib/data";
 import { methodLabel } from "@/lib/i18n";
 
+export const metadata = { title: "Sustainability Report" };
+
 export default function Report({ searchParams }: { searchParams: Promise<Params> }) {
   return (
     <main className="mx-auto max-w-6xl p-6">

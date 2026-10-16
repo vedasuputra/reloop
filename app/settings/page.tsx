@@ -11,6 +11,8 @@ import { saveSettings, resetSettings } from "./actions";
 
 type SP = { org?: string; ok?: string; error?: string; from?: string };
 
+export const metadata = { title: "Cost Settings" };
+
 export default function Settings({ searchParams }: { searchParams: Promise<SP> }) {
   return (
     <main className="mx-auto max-w-3xl p-6">

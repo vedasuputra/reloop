@@ -10,6 +10,8 @@ import { settingsFromConfig, type Params } from "@/lib/data";
 import { scoreOrder, type CollectionMethod } from "@/lib/rvs";
 import { methodLabel, reasonText } from "@/lib/i18n";
 
+export const metadata = { title: "Recommendation" };
+
 export default function Recommendation({ searchParams }: { searchParams: Promise<Params> }) {
   return (
     <main className="mx-auto max-w-3xl p-6">

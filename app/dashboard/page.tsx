@@ -8,6 +8,8 @@ import { categoryReturnRates, type Params } from "@/lib/data";
 import { methodLabel } from "@/lib/i18n";
 import { TARGETS } from "@/lib/targets";
 
+export const metadata = { title: "Dashboard" };
+
 export default function Dashboard({ searchParams }: { searchParams: Promise<Params> }) {
   return (
     <main className="mx-auto max-w-5xl p-6">

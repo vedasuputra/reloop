@@ -11,6 +11,8 @@ import { getT } from "@/lib/i18n";
 const DB_REGION = "Supabase, Southeast Asia (Singapore)";      // TODO confirm
 const APP_REGION = "Vercel, Singapore (sin1)";                  // TODO confirm
 
+export const metadata = { title: "Data & Privacy" };
+
 export default function Privacy() {
   return (
     <main className="mx-auto max-w-3xl p-6">

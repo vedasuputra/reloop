@@ -6,6 +6,8 @@ import OrderPicker from "@/components/OrderPicker";
 import { loadContext } from "@/lib/context";
 import type { Params } from "@/lib/data";
 
+export const metadata = { title: "AI Prediction" };
+
 export default function Prediction({ searchParams }: { searchParams: Promise<Params> }) {
   return (
     <main className="mx-auto max-w-3xl p-6">
