@@ -48,11 +48,66 @@ export interface Scored {
 
 export type Params = { method?: string; preset?: string; org?: string; [k: string]: string | undefined };
 
-/** Read method + preset from the URL, falling back to safe defaults. */
-export function readSettings(sp: Params) {
-  const method: CollectionMethod = sp.method === "dropoff" ? "dropoff" : "courier_pickup";
-  const presetKey = PRESETS.some((p) => p.key === sp.preset) ? sp.preset! : DEFAULT_PRESET;
-  const cfg = withPreset(baseConfig, presetKey);
+/** A company's own numbers (stored per organisation in Supabase, table org_settings). */
+export interface CostSettings {
+  single_use_mailer_vnd: number;
+  single_use_box_vnd: number;
+  reusable_pack_vnd: number;
+  reuse_cycles: number;
+  cleaning_per_reuse_vnd: number;
+  default_method: CollectionMethod;
+  dropoff_recovery_target: number; // 0-1
+  tariff_noi_tinh: number;
+  tariff_noi_vung: number;
+  tariff_lien_vung: number;
+  pickup_order_share: number;      // 0-1, courier pickup fee as share of outbound fee
+}
+
+/** The reference numbers (sourced), used as defaults in the settings form. */
+export function defaultCostSettings(cfg: Config = baseConfig): CostSettings {
+  const v = (s: string, k: string) => cfg[s][k].value;
+  const t = v("logistics", "ghn_tariff_vnd");
+  return {
+    single_use_mailer_vnd: v("packaging", "single_use_mailer_vnd"),
+    single_use_box_vnd: v("packaging", "single_use_box_vnd"),
+    reusable_pack_vnd: v("packaging", "reusable_pack_vnd"),
+    reuse_cycles: v("packaging", "reuse_cycles"),
+    cleaning_per_reuse_vnd: v("packaging", "cleaning_per_reuse_vnd"),
+    default_method: v("logistics", "pack_collection_method") === "dropoff" ? "dropoff" : "courier_pickup",
+    dropoff_recovery_target: v("generator", "dropoff_recovery_target"),
+    tariff_noi_tinh: t.noi_tinh, tariff_noi_vung: t.noi_vung, tariff_lien_vung: t.lien_vung,
+    pickup_order_share: v("logistics", "pickup_order_share"),
+  };
+}
+
+/** Copy of the config with a company's own numbers applied. Weights and the 70 threshold are never changed. */
+export function applyCostSettings(cfg: Config, c: CostSettings): Config {
+  const out: Config = JSON.parse(JSON.stringify(cfg));
+  const set = (s: string, k: string, val: unknown) => { out[s][k] = { ...out[s][k], value: val }; };
+  set("packaging", "single_use_mailer_vnd", c.single_use_mailer_vnd);
+  set("packaging", "single_use_box_vnd", c.single_use_box_vnd);
+  set("packaging", "reusable_pack_vnd", c.reusable_pack_vnd);
+  set("packaging", "reuse_cycles", c.reuse_cycles);
+  set("packaging", "cleaning_per_reuse_vnd", c.cleaning_per_reuse_vnd);
+  set("generator", "dropoff_recovery_target", c.dropoff_recovery_target);
+  set("logistics", "ghn_tariff_vnd", { noi_tinh: c.tariff_noi_tinh, noi_vung: c.tariff_noi_vung, lien_vung: c.tariff_lien_vung });
+  set("logistics", "pickup_order_share", c.pickup_order_share);
+  return out;
+}
+
+export const CUSTOM_PRESET = "custom";
+
+/** Read method + preset from the URL. "custom" uses the organisation's own numbers when they exist. */
+export function readSettings(sp: Params, custom: CostSettings | null = null) {
+  const valid = PRESETS.some((p) => p.key === sp.preset) || (custom !== null && sp.preset === CUSTOM_PRESET);
+  const presetKey = valid ? sp.preset! : custom ? CUSTOM_PRESET : DEFAULT_PRESET;
+  const method: CollectionMethod =
+    sp.method === "dropoff" || sp.method === "courier_pickup"
+      ? sp.method
+      : presetKey === CUSTOM_PRESET && custom ? custom.default_method : "courier_pickup";
+  const cfg = presetKey === CUSTOM_PRESET && custom
+    ? applyCostSettings(baseConfig, custom)
+    : withPreset(baseConfig, presetKey);
   return { method, presetKey, cfg };
 }
 

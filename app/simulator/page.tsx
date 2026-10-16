@@ -19,7 +19,7 @@ export default function Simulator({ searchParams }: { searchParams: Promise<Para
 async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   await connection();
   const sp = await searchParams;
-  const { user, method, presetKey, orgs, orgId, scored, qs } = await loadContext(sp);
+  const { user, method, presetKey, orgs, orgId, scored, qs, hasCustom } = await loadContext(sp);
   const sim = simulate(scored);
   const basePer1000 = (scored.reduce((t, s) => t + s.r.expCostSingleVnd, 0) / Math.max(1, scored.length)) * 1000;
 
@@ -27,7 +27,7 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
     <>
       <Nav qs={qs} email={user?.email} />
       <h1 className="text-2xl font-bold mb-3">Scenario Simulator</h1>
-      <Controls method={method} presetKey={presetKey} orgId={orgId} orgs={orgs} action="/simulator" />
+      <Controls method={method} presetKey={presetKey} orgId={orgId} orgs={orgs} hasCustom={hasCustom} action="/simulator" />
       <p className="text-sm text-gray-500 my-3">
         Order diurutkan dari skor RVS tertinggi, lalu X% teratas dipindahkan ke kemasan reusable.
         Pembanding: memilih order secara acak. {METHOD_LABEL[method]}. Biaya dasar semua sekali pakai: {vnd(basePer1000)} per 1.000 order.

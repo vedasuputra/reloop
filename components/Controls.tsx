@@ -1,12 +1,12 @@
-import { PRESETS } from "@/lib/data";
+import { PRESETS, CUSTOM_PRESET } from "@/lib/data";
 import type { OrgInfo } from "@/lib/context";
 
 /** GET form for organisation, brand type and pack collection method. Hidden fields keep other filters. */
 export default function Controls({
-  method, presetKey, orgId, orgs, action, hidden = {},
+  method, presetKey, orgId, orgs, action, hidden = {}, hasCustom = false,
 }: {
   method: string; presetKey: string; orgId: string; orgs: OrgInfo[];
-  action: string; hidden?: Record<string, string>;
+  action: string; hidden?: Record<string, string>; hasCustom?: boolean;
 }) {
   return (
     <form action={action} className="flex flex-wrap items-end gap-3 rounded border p-3 text-sm">
@@ -20,6 +20,7 @@ export default function Controls({
       <label className="flex flex-col">
         Tipe brand (kemasan sekali pakai)
         <select name="preset" defaultValue={presetKey} className="rounded border bg-transparent p-1">
+          {hasCustom && <option value={CUSTOM_PRESET}>Pengaturan kami</option>}
           {PRESETS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
         </select>
       </label>

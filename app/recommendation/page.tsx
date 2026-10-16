@@ -22,7 +22,7 @@ export default function Recommendation({ searchParams }: { searchParams: Promise
 async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   await connection();
   const sp = await searchParams;
-  const { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs } = await loadContext(sp);
+  const { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs, hasCustom } = await loadContext(sp);
 
   const wanted = (sp.order ?? "").trim().toUpperCase();
   const s = scored.find((x) => x.row.order_id.toUpperCase() === wanted)
@@ -38,7 +38,7 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
     <>
       <Nav qs={qs} email={user?.email} />
       <h1 className="text-2xl font-bold mb-3">Packaging Recommendation</h1>
-      <Controls method={method} presetKey={presetKey} orgId={orgId} orgs={orgs} action="/recommendation" hidden={{ order: s.row.order_id }} />
+      <Controls method={method} presetKey={presetKey} orgId={orgId} orgs={orgs} hasCustom={hasCustom} action="/recommendation" hidden={{ order: s.row.order_id }} />
       <OrderPicker action="/recommendation" orderId={s.row.order_id} method={method} presetKey={presetKey} orgId={orgId} />
 
       <section className="rounded border p-4 space-y-1">

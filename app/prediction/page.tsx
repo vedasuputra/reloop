@@ -19,7 +19,7 @@ export default function Prediction({ searchParams }: { searchParams: Promise<Par
 async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   await connection();
   const sp = await searchParams;
-  const { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs } = await loadContext(sp);
+  const { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs, hasCustom } = await loadContext(sp);
 
   const wanted = (sp.order ?? "").trim().toUpperCase();
   const s = scored.find((x) => x.row.order_id.toUpperCase() === wanted)

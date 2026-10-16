@@ -8,6 +8,8 @@ const LINKS = [
   ["/recommendation", "Recommendation"],
   ["/simulator", "Scenario Simulator"],
   ["/upload", "Upload CSV"],
+  ["/settings", "Pengaturan biaya"],
+  ["/integration", "Integrasi API"],
 ];
 
 /** Top navigation. `qs` keeps the chosen method/preset when switching screens. */

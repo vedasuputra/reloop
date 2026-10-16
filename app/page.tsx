@@ -18,7 +18,7 @@ export default function Dashboard({ searchParams }: { searchParams: Promise<Para
 async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   await connection();
   const sp = await searchParams;
-  const { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs } = await loadContext(sp);
+  const { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs, hasCustom } = await loadContext(sp);
 
   const count = (rec: string) => scored.filter((s) => s.r.recommendation === rec).length;
   const reusable = scored.filter((s) => s.r.recommendation === "REUSABLE");
@@ -33,7 +33,7 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
     <>
       <Nav qs={qs} email={user?.email} />
       <h1 className="text-2xl font-bold mb-3">Dashboard</h1>
-      <Controls method={method} presetKey={presetKey} orgId={orgId} orgs={orgs} action="/" />
+      <Controls method={method} presetKey={presetKey} orgId={orgId} orgs={orgs} hasCustom={hasCustom} action="/" />
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3 my-6">
         <Stat label="Order dinilai" value={scored.length.toLocaleString("id-ID")} note={`${rows.length} order, tanpa Cancelled`} />

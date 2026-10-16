@@ -21,7 +21,7 @@ export default function Orders({ searchParams }: { searchParams: Promise<Params>
 async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   await connection();
   const sp = await searchParams;
-  const { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs } = await loadContext(sp);
+  const { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs, hasCustom } = await loadContext(sp);
 
   const category = sp.category ?? "";
   const rec = sp.rec ?? "";
@@ -42,7 +42,7 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
     <>
       <Nav qs={base} email={user?.email} />
       <h1 className="text-2xl font-bold mb-3">Order Analysis</h1>
-      <Controls method={method} presetKey={presetKey} orgId={orgId} orgs={orgs} action="/orders" hidden={{ category, rec, q }} />
+      <Controls method={method} presetKey={presetKey} orgId={orgId} orgs={orgs} hasCustom={hasCustom} action="/orders" hidden={{ category, rec, q }} />
 
       <form action="/orders" className="flex flex-wrap items-end gap-3 my-4 text-sm">
         <input type="hidden" name="method" value={method} />
