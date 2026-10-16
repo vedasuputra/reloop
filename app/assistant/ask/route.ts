@@ -1,4 +1,4 @@
-import { loadContext } from "@/lib/context";
+import { loadContext, DEMO_ORG } from "@/lib/context";
 import { buildFacts, askAI, ruleAnswer, unverifiedNumbers, SYSTEM_PROMPT } from "@/lib/assistant";
 import type { Params } from "@/lib/data";
 
@@ -10,10 +10,11 @@ export async function POST(req: Request) {
   if (!question) return Response.json({ error: "Type a question first." }, { status: 400 });
 
   const sp: Params = { org: body.org, preset: body.preset, method: body.method };
-  const { user, scored, rows, cfg, method, modelLabel, orgs, orgId, t, f } = await loadContext(sp);
+  const { user, scored, rows, cfg, method, modelLabel, orgId, t, f } = await loadContext(sp);
   if (!user) return Response.json({ error: t("Please log in again.", "Vui lòng đăng nhập lại.") }, { status: 401 });
 
-  const orgName = orgs.find((o) => o.id === orgId)?.name ?? "data";
+  // Never send the data-set name to the AI: personal data sets are named after the user's email.
+  const orgName = orgId === DEMO_ORG ? "demo data (simulated)" : "the company's own uploaded data";
   const facts = buildFacts(question, scored, rows, cfg, method, modelLabel, orgName);
   const history = Array.isArray(body.history) ? body.history.filter((m: any) => typeof m?.text === "string") : [];
   const ai = await askAI(question, facts.text, history);

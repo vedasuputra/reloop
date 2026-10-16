@@ -103,7 +103,7 @@ async function Content({ searchParams }: { searchParams: Promise<SP> }) {
           )}
           {saved && (
             <p className="mt-6 text-sm">
-              <Link className="underline" href={`/?org=${org.id}&preset=${CUSTOM_PRESET}`}>{t("See the results on the Dashboard", "Xem kết quả ở trang Tổng quan")}</Link>
+              <Link className="underline" href={`/dashboard?org=${org.id}&preset=${CUSTOM_PRESET}`}>{t("See the results on the Dashboard", "Xem kết quả ở trang Tổng quan")}</Link>
               {" "}{t(`(${org.name} with "Our settings"). Upload orders in Upload CSV first if this data set is still empty.`,
                        `(${org.name} với "Cài đặt của chúng tôi"). Hãy tải đơn hàng lên ở mục Tải lên CSV trước nếu bộ dữ liệu này còn trống.`)}
             </p>

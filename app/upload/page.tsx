@@ -45,6 +45,11 @@ async function Content({ searchParams }: { searchParams: Promise<SP> }) {
           <p className="text-sm mb-4">
             {t("Target data set", "Bộ dữ liệu đích")}: <b>{org.name}</b>, {t(`currently ${f.n(count ?? 0)} orders. Demo data will not change.`, `hiện có ${f.n(count ?? 0)} đơn. Dữ liệu demo sẽ không thay đổi.`)}
           </p>
+          <p className="rounded border border-yellow-600 p-2 mb-3 text-sm">
+            {t("Prototype: upload simulated or anonymised data only — no customer names, phone numbers, emails or street addresses.",
+               "Bản mẫu: chỉ tải lên dữ liệu mô phỏng hoặc đã ẩn danh — không có tên, số điện thoại, email hay địa chỉ cụ thể của khách hàng.")}{" "}
+            <Link className="underline" href="/privacy">{t("Data & Privacy", "Dữ liệu & Quyền riêng tư")}</Link>
+          </p>
           <form action={uploadCsv} className="space-y-3 rounded border p-4 text-sm">
             <input type="hidden" name="org" value={org.id} />
             <input type="file" name="file" accept=".csv,text/csv" required />
@@ -73,7 +78,7 @@ async function Content({ searchParams }: { searchParams: Promise<SP> }) {
             <input type="hidden" name="org" value={org.id} />
             <button className="text-sm underline text-red-500">{t(`Delete all orders in ${org.name}`, `Xóa toàn bộ đơn trong ${org.name}`)}</button>
           </form>
-          <p className="mt-6 text-sm"><Link className="underline" href={`/?org=${org.id}`}>{t("See the results on the Dashboard", "Xem kết quả ở trang Tổng quan")}</Link></p>
+          <p className="mt-6 text-sm"><Link className="underline" href={`/dashboard?org=${org.id}`}>{t("See the results on the Dashboard", "Xem kết quả ở trang Tổng quan")}</Link></p>
         </>
       )}
     </>

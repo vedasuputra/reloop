@@ -29,7 +29,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
       <ul className="list-disc pl-5 text-sm">{L.tips.map((x) => <li key={x}>{x}</li>)}</ul>
       <div className="flex gap-3">
         <button onClick={() => reset()} className="rounded border px-3 py-1">{L.retry}</button>
-        <Link href="/" className="rounded border px-3 py-1">{L.home}</Link>
+        <Link href="/dashboard" className="rounded border px-3 py-1">{L.home}</Link>
         <Link href="/login" className="rounded border px-3 py-1">{L.login}</Link>
       </div>
       {error.digest && <p className="text-xs text-gray-500">{L.code}: {error.digest}</p>}

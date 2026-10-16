@@ -7,7 +7,7 @@ import { getT } from "@/lib/i18n";
 export default async function Nav({ qs = "", email }: { qs?: string; email?: string }) {
   const { lang, t } = await getT();
   const LINKS: [string, string][] = [
-    ["/", t("Dashboard", "Tổng quan")],
+    ["/dashboard", t("Dashboard", "Tổng quan")],
     ["/orders", t("Order Analysis", "Phân tích đơn hàng")],
     ["/prediction", t("AI Prediction", "Dự đoán AI")],
     ["/recommendation", t("Recommendation", "Đề xuất bao bì")],
@@ -23,7 +23,7 @@ export default async function Nav({ qs = "", email }: { qs?: string; email?: str
   return (
     <header className="border-b pb-3 mb-6 space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="font-bold text-lg">ReLoop AI</span>
+        <Link href="/" className="font-bold text-lg">ReLoop AI</Link>
         <div className="flex items-center gap-3 text-sm">
           <LangSwitch lang={lang} />
           {email && <span className="text-gray-500">{email}</span>}
@@ -35,7 +35,10 @@ export default async function Nav({ qs = "", email }: { qs?: string; email?: str
           <Link key={href} href={href + qs} className="underline">{label}</Link>
         ))}
       </nav>
-      <p className="text-xs text-gray-500">{t("All demo data is simulated.", "Toàn bộ dữ liệu demo là dữ liệu mô phỏng.")}</p>
+      <p className="text-xs text-gray-500">
+        {t("All demo data is simulated.", "Toàn bộ dữ liệu demo là dữ liệu mô phỏng.")}{" "}
+        <Link href="/privacy" className="underline">{t("Data & Privacy", "Dữ liệu & Quyền riêng tư")}</Link>
+      </p>
     </header>
   );
 }

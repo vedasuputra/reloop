@@ -175,5 +175,5 @@ export function categoryReturnRates(rows: Row[]): Map<string, { rate: number; n:
 export function trainingRows(rows: Row[]) {
   return rows
     .filter((r) => r.order_status === "Delivered" && r.was_returned !== null && r.was_returned !== "")
-    .map((r) => ({ ...toOrder(r), order_date: r.order_date, was_returned: Number(r.was_returned) === 1 ? 1 : 0 }));
+    .map((r) => ({ ...toOrder(r), order_id: r.order_id, order_date: r.order_date, was_returned: Number(r.was_returned) === 1 ? 1 : 0 }));
 }

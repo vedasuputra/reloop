@@ -5,6 +5,7 @@ import { loadContext } from "@/lib/context";
 import { model as baseModel, trainingRows, type Params } from "@/lib/data";
 import { trainModel, cannotTrain, MIN_TRAIN_ROWS, type TrainedModel } from "@/lib/train";
 import type { T } from "@/lib/i18n";
+import { testPart, groupStats, wrongCases, topFactors } from "@/lib/fairness";
 import { retrainModel, deleteModel } from "./actions";
 
 function factorLabel(t: T, k: string) {
@@ -32,7 +33,7 @@ export default function ModelPage({ searchParams }: { searchParams: Promise<Para
 async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   await connection();
   const sp = await searchParams;
-  const { user, orgs, orgId, rows, qs, orgModel, t, f } = await loadContext(sp);
+  const { user, orgs, orgId, rows, qs, orgModel, model, scored, t, f } = await loadContext(sp);
   const org = orgs.find((o) => o.id === orgId);
   const canEdit = org?.role === "owner" || org?.role === "editor";
 
@@ -42,6 +43,20 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   const preview: TrainedModel | null = why ? null : trainModel(train);
   const current = orgModel ?? (baseModel as TrainedModel);
   const keys = [...new Set([...Object.keys(current.coefficients), ...Object.keys(preview?.coefficients ?? {})])];
+  // Fairness and wrong cases: measured on the newest 25% of labelled orders with the model in use
+  const test = testPart(train);
+  const recOf = new Map(scored.map((s) => [s.row.order_id, s.r.recommendation]));
+  const fairness = [
+    { title: t("Payment method", "Hình thức thanh toán"), stats: groupStats(test, model, recOf, [
+      { name: "COD", test: (r) => r.payment_method === "COD" },
+      { name: t("Prepaid (card, e-wallet, transfer)", "Trả trước (thẻ, ví điện tử, chuyển khoản)"), test: (r) => r.payment_method !== "COD" },
+    ]) },
+    { title: t("Customer type", "Loại khách hàng"), stats: groupStats(test, model, recOf, [
+      { name: t("New customer", "Khách mới"), test: (r) => r.past_delivered_in_data === 0 },
+      { name: t("Returning customer", "Khách quay lại"), test: (r) => r.past_delivered_in_data > 0 },
+    ]) },
+  ];
+  const wrong = test.length ? wrongCases(test, model) : [];
   const myData = t("\"My data\"", "\"Dữ liệu của tôi\"");
 
   return (
@@ -120,6 +135,66 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
           <p className="text-xs text-gray-500 mt-2">
             {t("Positive numbers raise the return probability, negative numbers lower it. Reference category", "Số dương làm tăng xác suất hoàn hàng, số âm làm giảm. Danh mục tham chiếu")}: {preview.reference_category}.
           </p>
+        </>
+      )}
+
+      {test.length > 0 && (
+        <>
+          <h2 className="font-semibold mt-8 mb-1">{t("Fairness by group", "Công bằng theo nhóm")}</h2>
+          <p className="text-sm text-gray-500 mb-2">
+            {t(`Measured with the model in use on the ${f.n(test.length)} newest labelled orders (not used for training). A fair model predicts close to what actually happens in every group. The decision only changes which bag is used, never price or service.`,
+               `Đo bằng mô hình đang dùng trên ${f.n(test.length)} đơn có nhãn mới nhất (không dùng để huấn luyện). Mô hình công bằng dự đoán sát với thực tế ở mọi nhóm. Quyết định chỉ thay đổi loại túi, không bao giờ thay đổi giá hay dịch vụ.`)}
+          </p>
+          {fairness.map(({ title, stats }) => {
+            const gaps = stats.map((x) => x.predictedRate - x.actualRate);
+            const reuse = stats.map((x) => x.reusableShare);
+            return (
+              <div key={title} className="overflow-x-auto mb-4">
+                <table className="w-full text-sm">
+                  <thead><tr className="text-left border-b">
+                    <th>{title}</th><th>{t("Orders", "Đơn")}</th><th>{t("Actual returns", "Tỷ lệ hoàn thực tế")}</th>
+                    <th>{t("Predicted returns", "Tỷ lệ hoàn dự đoán")}</th><th>{t("Gap", "Chênh lệch")}</th><th>AUC</th><th>{t("Recommended REUSABLE", "Được đề xuất REUSABLE")}</th>
+                  </tr></thead>
+                  <tbody>
+                    {stats.map((x, i) => (
+                      <tr key={x.group} className="border-b">
+                        <td>{x.group}</td><td>{f.n(x.n)}</td><td>{f.pct(x.actualRate)}</td><td>{f.pct(x.predictedRate)}</td>
+                        <td>{gaps[i] >= 0 ? "+" : ""}{f.n(gaps[i] * 100, 1)} {t("pts", "điểm")}</td>
+                        <td>{x.auc === null ? "-" : f.n(x.auc, 2)}</td><td>{f.pct(x.reusableShare)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <p className="text-xs text-gray-500 mt-1">
+                  {t(`Largest calibration gap between groups: ${f.n(Math.abs(gaps[0] - gaps[1]) * 100, 1)} pts. Difference in REUSABLE share: ${f.n(Math.abs(reuse[0] - reuse[1]) * 100, 1)} pts.`,
+                     `Chênh lệch hiệu chuẩn lớn nhất giữa các nhóm: ${f.n(Math.abs(gaps[0] - gaps[1]) * 100, 1)} điểm. Chênh lệch tỷ lệ REUSABLE: ${f.n(Math.abs(reuse[0] - reuse[1]) * 100, 1)} điểm.`)}
+                </p>
+              </div>
+            );
+          })}
+
+          <h2 className="font-semibold mt-8 mb-1">{t("Where the model is wrong", "Những trường hợp mô hình dự đoán sai")}</h2>
+          <p className="text-sm text-gray-500 mb-2">
+            {t("The test orders where the predicted return probability was furthest from what actually happened. Returns are partly random, so no model gets every order right; this is why cost carries 55% of the RVS and the prediction only 30% through pack return.",
+               "Các đơn kiểm tra có xác suất hoàn dự đoán lệch xa nhất so với thực tế. Việc hoàn hàng có phần ngẫu nhiên nên không mô hình nào đúng mọi đơn; vì vậy chi phí chiếm 55% RVS, còn dự đoán chỉ ảnh hưởng 30% qua khả năng bao bì quay về.")}
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead><tr className="text-left border-b">
+                <th>{t("Order", "Đơn")}</th><th>{t("Category", "Danh mục")}</th><th>{t("Predicted", "Dự đoán")}</th>
+                <th>{t("What happened", "Thực tế")}</th><th>{t("Main reasons for the prediction", "Lý do chính của dự đoán")}</th>
+              </tr></thead>
+              <tbody>
+                {wrong.map((w) => (
+                  <tr key={w.row.order_id} className="border-b">
+                    <td>{w.row.order_id}</td><td>{w.row.category}</td><td>{f.pct(w.predicted)}</td>
+                    <td>{w.row.was_returned === 1 ? t("returned", "đã hoàn") : t("kept", "giữ lại")}</td>
+                    <td>{topFactors(model, w.row).map(([k, v]) => `${factorLabel(t, k)} (${v > 0 ? "+" : ""}${f.n(v, 2)})`).join(", ") || t("no strong factor", "không có yếu tố nổi bật")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
 

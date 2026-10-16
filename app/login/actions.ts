@@ -11,7 +11,7 @@ export async function login(formData: FormData) {
     password: String(formData.get("password")),
   });
   if (error) redirect("/login?error=" + encodeURIComponent(t("Wrong email or password.", "Email hoặc mật khẩu không đúng.")));
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function signup(formData: FormData) {
@@ -29,7 +29,7 @@ export async function signup(formData: FormData) {
       : t(`Sign-up failed: ${error.message}`, `Đăng ký không thành công: ${error.message}`);
     redirect("/login?error=" + encodeURIComponent(msg));
   }
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function logout() {
