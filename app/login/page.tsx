@@ -1,15 +1,12 @@
 import { Suspense } from "react";
 import { login, signup } from "./actions";
+import DemoNote from "@/components/DemoNote";
 
 export default function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   return (
     <main className="mx-auto max-w-sm p-8 space-y-6">
       <h1 className="text-2xl font-bold">ReLoop AI</h1>
-      <div className="rounded border p-3 text-sm">
-        <p className="font-semibold">Akun demo untuk juri</p>
-        <p>Email: demo@reloop.app</p>
-        <p>Password: reloop</p>
-      </div>
+      <DemoNote />
       <Suspense fallback={null}>
         <ErrorMessage searchParams={searchParams} />
       </Suspense>
@@ -23,7 +20,6 @@ export default function LoginPage({ searchParams }: { searchParams: Promise<{ er
           <button formAction={signup} className="flex-1 rounded border p-2">Daftar</button>
         </div>
       </form>
-      <p className="text-xs text-gray-500">Semua data di aplikasi ini adalah data simulasi.</p>
     </main>
   );
 }

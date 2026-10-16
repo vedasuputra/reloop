@@ -54,7 +54,7 @@ async function Content({ searchParams }: { searchParams: Promise<SP> }) {
 
           <h2 className="font-semibold mt-6 mb-2">Format file</h2>
           <p className="text-sm">
-            Unduh <a className="underline" href="/template_orders.csv">template CSV</a>, isi dengan data order, lalu upload.
+            Unduh <a className="underline" href="/template_orders.csv">template CSV</a>, isi dengan data order, lalu upload. Untuk mencoba Model AI, pakai <a className="underline" href="/contoh_latih_ulang.csv" download>contoh_latih_ulang.csv</a> (1.000 order dengan kolom was_returned).
             Maksimal 5.000 order per upload.
           </p>
           <ul className="text-sm list-disc pl-5 mt-2">

@@ -3,7 +3,7 @@ import { connection } from "next/server";
 import Nav from "@/components/Nav";
 import Controls from "@/components/Controls";
 import { loadContext } from "@/lib/context";
-import { vnd, pct, METHOD_LABEL, type Params } from "@/lib/data";
+import { vnd, pct, METHOD_LABEL, categoryReturnRates, type Params } from "@/lib/data";
 
 export default function Dashboard({ searchParams }: { searchParams: Promise<Params> }) {
   return (
@@ -18,7 +18,7 @@ export default function Dashboard({ searchParams }: { searchParams: Promise<Para
 async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   await connection();
   const sp = await searchParams;
-  const { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs, hasCustom } = await loadContext(sp);
+  const { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs, hasCustom, modelLabel } = await loadContext(sp);
 
   const count = (rec: string) => scored.filter((s) => s.r.recommendation === rec).length;
   const reusable = scored.filter((s) => s.r.recommendation === "REUSABLE");
@@ -28,6 +28,7 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   const lost = reusable.reduce((t, s) => t + s.lostProb, 0);
 
   const cats = [...new Set(scored.map((s) => s.row.category))].sort();
+  const catRates = categoryReturnRates(rows);
 
   return (
     <>
@@ -49,14 +50,19 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
       </section>
 
       <p className="text-sm text-gray-500 mb-2">
-        Pengaturan: {METHOD_LABEL[method]}, kemasan sekali pakai {vnd(cfg.packaging.single_use_mailer_vnd.value)} (mailer)
+        Prediksi retur memakai {modelLabel}. Pengaturan: {METHOD_LABEL[method]}, kemasan sekali pakai {vnd(cfg.packaging.single_use_mailer_vnd.value)} (mailer)
         dan {vnd(cfg.packaging.single_use_box_vnd.value)} (kotak, outerwear).
+      </p>
+
+      <p className="text-sm flex flex-wrap gap-4">
+        <a className="underline" href={`/export${qs}&rec=REUSABLE`}>Download daftar REUSABLE (CSV)</a>
+        <a className="underline" href={`/export${qs}`}>Download semua rekomendasi (CSV)</a>
       </p>
 
       <h2 className="font-semibold mt-6 mb-2">Per kategori</h2>
       <table className="w-full text-sm">
         <thead><tr className="text-left border-b">
-          <th>Kategori</th><th>Order</th><th>Rata-rata peluang retur</th><th>REUSABLE</th>
+          <th>Kategori</th><th>Order</th><th>Retur sebenarnya (riwayat)</th><th>Rata-rata peluang retur (prediksi)</th><th>REUSABLE</th>
         </tr></thead>
         <tbody>
           {cats.map((c) => {
@@ -64,7 +70,9 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
             const avg = list.reduce((t, s) => t + s.r.predReturnProb, 0) / list.length;
             return (
               <tr key={c} className="border-b">
-                <td>{c}</td><td>{list.length}</td><td>{pct(avg)}</td>
+                <td>{c}</td><td>{list.length}</td>
+                <td>{catRates.has(c) ? `${pct(catRates.get(c)!.rate)} (${catRates.get(c)!.n} terkirim)` : "-"}</td>
+                <td>{pct(avg)}</td>
                 <td>{list.filter((s) => s.r.recommendation === "REUSABLE").length}</td>
               </tr>
             );

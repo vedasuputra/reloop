@@ -4,7 +4,7 @@ import Link from "next/link";
 import Nav from "@/components/Nav";
 import Controls from "@/components/Controls";
 import { loadContext } from "@/lib/context";
-import { vnd, pct, type Params } from "@/lib/data";
+import { vnd, pct, categoryReturnRates, type Params } from "@/lib/data";
 
 const PAGE_SIZE = 50;
 
@@ -36,6 +36,7 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   const shown = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const cats = [...new Set(scored.map((s) => s.row.category))].sort();
   const base = qs;
+  const catRates = categoryReturnRates(rows);
   const filterQs = `${base}&category=${category}&rec=${rec}&q=${encodeURIComponent(q)}`;
 
   return (
@@ -66,12 +67,15 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
         <button className="rounded border px-3 py-1">Filter</button>
       </form>
 
+      <p className="text-sm mb-2">
+        <a className="underline" href={`/export${base}&category=${category}&rec=${rec}`}>Download CSV untuk tim packing ({filtered.length.toLocaleString("id-ID")} order sesuai filter)</a>
+      </p>
       <p className="text-sm text-gray-500 mb-2">{filtered.length.toLocaleString("id-ID")} order, halaman {page} dari {pages}</p>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead><tr className="text-left border-b">
             <th>Order</th><th>Tanggal</th><th>Kategori</th><th>Nilai</th><th>Bayar</th>
-            <th>Riwayat pelanggan</th><th>Tujuan</th><th>Peluang retur</th><th>RVS</th><th>Rekomendasi</th>
+            <th>Riwayat pelanggan</th><th>Retur kategori (riwayat)</th><th>Tujuan</th><th>Peluang retur</th><th>RVS</th><th>Rekomendasi</th>
           </tr></thead>
           <tbody>
             {shown.map((s) => (
@@ -82,6 +86,7 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
                 <td>{vnd(Number(s.row.order_value_vnd))}</td>
                 <td>{s.row.payment_method}</td>
                 <td>{s.order.past_delivered_in_data} order, retur {s.order.customer_return_rate_in_data === null ? "-" : pct(s.order.customer_return_rate_in_data)}</td>
+                <td>{catRates.has(s.row.category) ? `${pct(catRates.get(s.row.category)!.rate)} dari ${catRates.get(s.row.category)!.n}` : "-"}</td>
                 <td>{s.row.address}, {s.order.estimated_delivery_distance_km} km</td>
                 <td><Link className="underline" href={`/prediction${base}&order=${s.row.order_id}`}>{pct(s.r.predReturnProb)}</Link></td>
                 <td>{s.r.rvs.toFixed(1)}</td>

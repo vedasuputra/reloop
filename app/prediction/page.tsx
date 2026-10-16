@@ -4,7 +4,7 @@ import Link from "next/link";
 import Nav from "@/components/Nav";
 import OrderPicker from "@/components/OrderPicker";
 import { loadContext } from "@/lib/context";
-import { model, pct, vnd, type Params } from "@/lib/data";
+import { pct, vnd, type Params } from "@/lib/data";
 
 export default function Prediction({ searchParams }: { searchParams: Promise<Params> }) {
   return (
@@ -19,7 +19,7 @@ export default function Prediction({ searchParams }: { searchParams: Promise<Par
 async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   await connection();
   const sp = await searchParams;
-  const { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs, hasCustom } = await loadContext(sp);
+  const { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs, hasCustom, model, modelLabel } = await loadContext(sp);
 
   const wanted = (sp.order ?? "").trim().toUpperCase();
   const s = scored.find((x) => x.row.order_id.toUpperCase() === wanted)
@@ -74,8 +74,10 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
       </table>
 
       <p className="text-xs text-gray-500 mt-4">
-        Model: logistic regression, dilatih di data simulasi. AUC {auc ?? "-"} dibanding baseline kategori {aucBase ?? "-"}.
-        Ini membuktikan alurnya berjalan, bukan akurasi di dunia nyata; model dilatih ulang dengan data asli brand saat pilot.
+        Dipakai: {modelLabel}. AUC {auc ?? "-"} dibanding baseline kategori {aucBase ?? "-"}.
+        {(model as any).trained_at
+          ? " Angka ini diuji di 25% order terbaru data ini yang tidak dipakai saat melatih."
+          : " Ini membuktikan alurnya berjalan, bukan akurasi di dunia nyata. Brand bisa melatih ulang dengan datanya sendiri di halaman Model AI."}
       </p>
       <p className="mt-4 text-sm"><Link className="underline" href={`/recommendation${qs}&order=${s.row.order_id}`}>Lihat rekomendasi kemasan untuk order ini</Link></p>
     </>

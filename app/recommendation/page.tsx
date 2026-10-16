@@ -7,7 +7,6 @@ import OrderPicker from "@/components/OrderPicker";
 import { loadContext } from "@/lib/context";
 import { settingsFromConfig, pct, vnd, METHOD_LABEL, type Params } from "@/lib/data";
 import { scoreOrder, type CollectionMethod } from "@/lib/rvs";
-import { model } from "@/lib/data";
 
 export default function Recommendation({ searchParams }: { searchParams: Promise<Params> }) {
   return (
@@ -22,7 +21,7 @@ export default function Recommendation({ searchParams }: { searchParams: Promise
 async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   await connection();
   const sp = await searchParams;
-  const { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs, hasCustom } = await loadContext(sp);
+  const { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs, hasCustom, model, modelLabel } = await loadContext(sp);
 
   const wanted = (sp.order ?? "").trim().toUpperCase();
   const s = scored.find((x) => x.row.order_id.toUpperCase() === wanted)
@@ -46,6 +45,7 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
         <p className="text-3xl font-bold">{r.recommendation}</p>
         <p>RVS: {r.rvs.toFixed(1)} / 100 (REUSABLE ≥ 70, REVIEW 40-69, SINGLE-USE &lt; 40)</p>
         <p className="text-sm">Alasan: {r.reason}</p>
+        <p className="text-xs text-gray-500">Prediksi retur memakai {modelLabel}.</p>
       </section>
 
       <h2 className="font-semibold mt-6 mb-2">Rincian skor</h2>

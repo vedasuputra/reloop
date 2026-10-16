@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
-import { fetchOrders, readSettings, scoreAll, type Params, type CostSettings } from "@/lib/data";
+import { fetchOrders, readSettings, scoreAll, model as baseModel, type Params, type CostSettings } from "@/lib/data";
+import type { TrainedModel } from "@/lib/train";
+import type { Model } from "@/lib/rvs";
 
 export const DEMO_ORG = "00000000-0000-0000-0000-000000000001";
 
@@ -21,6 +23,13 @@ export async function getCostSettings(orgId: string): Promise<CostSettings | nul
   return (data?.settings as CostSettings) ?? null;
 }
 
+/** A model retrained on this organisation's own orders, or null. */
+export async function getOrgModel(orgId: string): Promise<TrainedModel | null> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("org_models").select("model").eq("org_id", orgId).maybeSingle();
+  return (data?.model as TrainedModel) ?? null;
+}
+
 /** Everything a screen needs: user, settings, chosen organisation, scored orders. */
 export async function loadContext(sp: Params) {
   const supabase = await createClient();
@@ -29,8 +38,13 @@ export async function loadContext(sp: Params) {
   const orgId = orgs.some((o) => o.id === sp.org) ? sp.org! : (orgs[0]?.id ?? DEMO_ORG);
   const custom = await getCostSettings(orgId);
   const { method, presetKey, cfg } = readSettings(sp, custom);
+  const orgModel = await getOrgModel(orgId);
+  const model: Model = orgModel ?? baseModel;
+  const modelLabel = orgModel
+    ? `model khusus data ini (dilatih ${orgModel.trained_at.slice(0, 10)}, AUC ${orgModel.metrics.auc_model})`
+    : "model bawaan (dilatih di data simulasi)";
   const rows = await fetchOrders(orgId);
-  const scored = scoreAll(rows, cfg, method);
+  const scored = scoreAll(rows, cfg, method, model);
   const qs = `?method=${method}&preset=${presetKey}&org=${orgId}`;
-  return { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs, hasCustom: custom !== null };
+  return { user, method, presetKey, cfg, orgs, orgId, rows, scored, qs, hasCustom: custom !== null, model, orgModel, modelLabel };
 }

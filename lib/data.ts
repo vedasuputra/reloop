@@ -140,7 +140,7 @@ export function toOrder(r: Row): Order {
 }
 
 /** Score every order that still needs packing (Cancelled excluded). */
-export function scoreAll(rows: Row[], cfg: Config, method: CollectionMethod): Scored[] {
+export function scoreAll(rows: Row[], cfg: Config, method: CollectionMethod, m: Model = model): Scored[] {
   const s = settingsFromConfig(cfg);
   const q1 = s.recoveryIfReturned;
   const q0 = method === "dropoff" ? s.recoveryIfKeptDropoff : s.recoveryIfKeptCourier;
@@ -149,7 +149,7 @@ export function scoreAll(rows: Row[], cfg: Config, method: CollectionMethod): Sc
     .filter((row) => row.order_status !== "Cancelled")
     .map((row) => {
       const order = toOrder(row);
-      const r = scoreOrder(cfg, model, order, method, s);
+      const r = scoreOrder(cfg, m, order, method, s);
       const p = r.predReturnProb;
       const lostProb = (1 - bom) * (p * (1 - q1) + (1 - p) * (1 - q0));
       return { row, order, r, lostProb };
@@ -158,9 +158,27 @@ export function scoreAll(rows: Row[], cfg: Config, method: CollectionMethod): Sc
 
 export { packReturnProb, settingsFromConfig };
 
+/** Actual return rate per category from delivered orders that have a was_returned label. */
+export function categoryReturnRates(rows: Row[]): Map<string, { rate: number; n: number }> {
+  const acc = new Map<string, [number, number]>();
+  for (const r of rows) {
+    if (r.order_status !== "Delivered" || r.was_returned === null || r.was_returned === "") continue;
+    const [s, n] = acc.get(r.category) ?? [0, 0];
+    acc.set(r.category, [s + Number(r.was_returned), n + 1]);
+  }
+  return new Map([...acc].map(([c, [s, n]]) => [c, { rate: s / n, n }]));
+}
+
 export const vnd = (x: number) => Math.round(x).toLocaleString("id-ID") + " VND";
 export const pct = (x: number) => Math.round(x * 100) + "%";
 export const METHOD_LABEL: Record<CollectionMethod, string> = {
   courier_pickup: "Dijemput kurir",
   dropoff: "Drop-off (tanpa kurir)",
 };
+
+/** Delivered orders with a was_returned label, in the shape the trainer needs. */
+export function trainingRows(rows: Row[]) {
+  return rows
+    .filter((r) => r.order_status === "Delivered" && r.was_returned !== null && r.was_returned !== "")
+    .map((r) => ({ ...toOrder(r), order_date: r.order_date, was_returned: Number(r.was_returned) === 1 ? 1 : 0 }));
+}
