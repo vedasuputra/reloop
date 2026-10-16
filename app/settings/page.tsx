@@ -4,10 +4,11 @@ import Link from "next/link";
 import Nav from "@/components/Nav";
 import { createClient } from "@/lib/supabase/server";
 import { getOrgs, getCostSettings } from "@/lib/context";
-import { defaultCostSettings, CUSTOM_PRESET, type CostSettings } from "@/lib/data";
+import { defaultCostSettings, CUSTOM_PRESET, PRESETS, baseConfig, type CostSettings } from "@/lib/data";
+import { withPreset } from "@/lib/rvs";
 import { saveSettings, resetSettings } from "./actions";
 
-type SP = { org?: string; ok?: string; error?: string };
+type SP = { org?: string; ok?: string; error?: string; from?: string };
 
 export default function Settings({ searchParams }: { searchParams: Promise<SP> }) {
   return (
@@ -27,7 +28,11 @@ async function Content({ searchParams }: { searchParams: Promise<SP> }) {
   const org = own.find((o) => o.id === sp.org) ?? own[0];
   const saved = org ? await getCostSettings(org.id) : null;
   const d = defaultCostSettings();
-  const v: CostSettings = saved ?? d;
+  // "Mulai dari preset": prefill the form with a preset's numbers (not saved until "Simpan")
+  const fromPreset = PRESETS.find((p) => p.key === sp.from);
+  const v: CostSettings = fromPreset
+    ? { ...(saved ?? d), ...pick(defaultCostSettings(withPreset(baseConfig, fromPreset.key))) }
+    : saved ?? d;
 
   const field = (name: keyof CostSettings, label: string, hint: string, value: number, step = "1") => (
     <label className="flex flex-col gap-1">
@@ -51,7 +56,17 @@ async function Content({ searchParams }: { searchParams: Promise<SP> }) {
             Isi angka bisnis untuk <b>{org.name}</b>. Angka awal adalah acuan bersumber (Lazada, GHN, laundry HCMC).
             {saved ? " Pengaturan kamu sudah tersimpan." : " Belum ada pengaturan tersimpan."} Bobot rumus RVS dan ambang 70 tidak bisa diubah.
           </p>
-          <form action={saveSettings} className="grid md:grid-cols-2 gap-4 rounded border p-4 text-sm">
+          <div className="mb-4 text-sm">
+            <p className="mb-1">Mulai dari preset (mengisi formulir; klik Simpan untuk menyimpan):</p>
+            <div className="flex flex-wrap gap-2">
+              {PRESETS.map((p) => (
+                <Link key={p.key} href={`/settings?org=${org.id}&from=${p.key}`}
+                  className={`rounded border px-2 py-1 ${fromPreset?.key === p.key ? "font-semibold" : ""}`}>{p.label}</Link>
+              ))}
+            </div>
+            {fromPreset && <p className="text-xs text-gray-500 mt-1">Formulir diisi dari preset "{fromPreset.label}". Belum disimpan.</p>}
+          </div>
+          <form key={fromPreset?.key ?? "saved"} action={saveSettings} className="grid md:grid-cols-2 gap-4 rounded border p-4 text-sm">
             <input type="hidden" name="org" value={org.id} />
             {field("single_use_mailer_vnd", "Mailer sekali pakai (VND per kantong)", `acuan ${d.single_use_mailer_vnd}`, v.single_use_mailer_vnd)}
             {field("single_use_box_vnd", "Kotak sekali pakai untuk outerwear (VND)", `acuan ${d.single_use_box_vnd}`, v.single_use_box_vnd)}
@@ -89,4 +104,9 @@ async function Content({ searchParams }: { searchParams: Promise<SP> }) {
       )}
     </>
   );
+}
+
+/** Presets only change packaging prices; keep the rest of the company's numbers. */
+function pick(c: CostSettings): Partial<CostSettings> {
+  return { single_use_mailer_vnd: c.single_use_mailer_vnd, single_use_box_vnd: c.single_use_box_vnd };
 }
