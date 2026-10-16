@@ -10,6 +10,7 @@ const LINKS = [
   ["/simulator", "Scenario Simulator"],
   ["/report", "Laporan Sustainability"],
   ["/model", "Model AI"],
+  ["/assistant", "Asisten AI"],
   ["/upload", "Upload CSV"],
   ["/settings", "Pengaturan biaya"],
   ["/integration", "Integrasi API"],
