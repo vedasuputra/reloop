@@ -1,0 +1,39 @@
+{
+  "_note": "Logistic regression trained on SIMULATED data. Validates the pipeline, not real-world accuracy. Retrain on client data.",
+  "model": "logistic_regression",
+  "intercept": -2.248180071839651,
+  "coefficients": {
+    "multi_size": 0.6676791183904685,
+    "cod": 0.1832115069241212,
+    "voucher_used": 0.17554319365618054,
+    "qty_2plus": 0.08784640852591995,
+    "has_history": -0.010612451466210279,
+    "cust_rr": 0.3762022081731947,
+    "cat_Activewear": 0.8429004182852803,
+    "cat_Dress": 1.4097750760214902,
+    "cat_Jeans": 1.0422024458440307,
+    "cat_Outerwear": 1.0090142320665327,
+    "cat_Shirt": 0.7481697386409317,
+    "cat_T-shirt": 0.16796620725966177,
+    "cat_Trousers": 0.9648457256486078
+  },
+  "reference_category": "Accessories",
+  "feature_definitions": {
+    "multi_size": "same item in >1 size (0/1)",
+    "cod": "payment_method == COD",
+    "voucher_used": "0/1",
+    "qty_2plus": "quantity_of_item >= 2",
+    "has_history": "customer has earlier delivered orders",
+    "cust_rr": "customer's past return rate (0 if none)",
+    "cat_*": "one-hot category, reference = Accessories"
+  },
+  "metrics": {
+    "auc_model": 0.66,
+    "auc_baseline_category_mean": 0.629,
+    "auc_ceiling_true_prob": 0.734,
+    "brier_model": 0.173,
+    "n_train": 3440.0,
+    "n_test": 1147.0,
+    "test_return_rate": 0.241
+  }
+}

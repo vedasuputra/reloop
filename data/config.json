@@ -1,0 +1,350 @@
+{
+  "_readme": "Every number the model, generator and RVS use. status: sourced | assumption | needs_quote | needs_pilot | blank. NEVER present non-sourced values as fact. All data in this project is SIMULATED.",
+  "packaging": {
+    "single_use_mailer_vnd": {
+      "value": 705,
+      "status": "sourced",
+      "note": "Size-matched to the 30x40 reusable bag. Lazada 'Tui goi hang niem phong co san keo tu dinh (500gr)', The KA Shop (HCMC), 5-6 zem: 25x35 = 30,900 VND / ~50 bags = ~620; 28x42 = 30,900 / ~39 = ~790; seller says these two sizes are for clothing (1-4 sets). Average ~705. Accessed 2026-10-17. URL to be copied."
+    },
+    "single_use_box_vnd": {
+      "value": 3400,
+      "status": "sourced",
+      "note": "Plain kraft mailer box 30x20x5 cm (clothing size), Lazada, accessed 2026-10-17: Nghe An seller ~2,350/box, NANA BOX (HCMC) 34,300/10 = ~3,430, ECONOPOSTAL (Hanoi) ~4,610. Median ~3,400. Old value 1,000 (Vietbox 10x10x5) was too small for clothing."
+    },
+    "box_categories": {
+      "value": [
+        "Outerwear"
+      ],
+      "status": "assumption",
+      "note": "Bulky categories assumed to ship in a box; others in a mailer."
+    },
+    "reusable_pack_vnd": {
+      "value": 1700,
+      "status": "sourced",
+      "note": "Median wholesale of Lazada.vn 30x40 zip bags: Ziplock HD 7 zem 92,000/kg / 55 pcs = 1,673; PE zipper hot xoai 88,000/kg / 40 pcs = 2,200 (khanghuystore). Public listing, not a quote. accessed 2026-10-16. Conservative: 8,300 (retail combo 3 for 25,000)."
+    },
+    "reuse_cycles": {
+      "value": 10,
+      "status": "assumption",
+      "note": "Thin 7-zem zip bag, not a purpose-built reusable mailer. Park & Waqar (2022) 20 cycles applies to purpose-built mailers. Sensitivity 5 / 20."
+    },
+    "cleaning_per_reuse_vnd": {
+      "value": 180,
+      "status": "sourced",
+      "note": "Upper-bound estimate: public HCMC laundry per kg (Giat Say Thong Minh 8-10k/kg, tiemgiat.com 65k/7kg, giatuisaigon.com 12k/kg; median ~9,300/kg) x 18 g pack. Real cleaning (wipe/rinse) likely cheaper. Not a pilot. accessed 2026-10-16."
+    },
+    "unrecovered_pack_loss_share": {
+      "value": 0.5,
+      "status": "assumption",
+      "note": "Share of the reusable pack price lost when a pack is NOT recovered (roughly half its life remaining). Was 1.0 (full price). Run 1.0 as worst-case sensitivity."
+    },
+    "reusable_pack_vnd_conservative": {
+      "value": 8300,
+      "status": "sourced",
+      "note": "Lazada.vn '[HCM] Tui zip lua mo 30x40 combo 3 cai' 25,000 VND / 3. Retail. accessed 2026-10-16."
+    },
+    "cleaning_per_reuse_vnd_optimistic": {
+      "value": 80,
+      "status": "sourced",
+      "note": "tiemgiat.com wash only 30,000/7kg x 18 g."
+    },
+    "single_use_mailer_vnd_small": {
+      "value": 490,
+      "status": "sourced",
+      "note": "Previous base: Shopee listing, 100 pcs for 48-50k VND, likely a small size (~20x30, comparable K&S 20x30 = ~400). Kept as lowest-cost sensitivity."
+    }
+  },
+  "logistics": {
+    "returning_item_carries_pack": {
+      "value": true,
+      "status": "sourced",
+      "note": "Coolmate collects returns by courier from the customer (coolmate.me 60-day policy), so the pack can ride back with the item at ~0 extra cost. Brands in general: assumption."
+    },
+    "ghn_tariff_vnd": {
+      "value": {
+        "noi_tinh": 15500,
+        "noi_vung": 18000,
+        "lien_vung": 19000
+      },
+      "status": "sourced",
+      "note": "GHN Express 0-2,000 g incl. VAT, effective 07/11/2025, via nhanh.vn/bang-gia-van-chuyen (secondary source); ghn.vn confirms 'tu 15,5k/don'. accessed 2026-10-16."
+    },
+    "route_km_thresholds": {
+      "value": {
+        "noi_tinh_max": 30,
+        "noi_vung_max": 60
+      },
+      "status": "assumption",
+      "note": "Dataset has distance but no origin province; warehouse assumed HCMC. <=30 km noi tinh, 30-60 noi vung, >60 lien vung. Replace with real province once brands upload addresses."
+    },
+    "pickup_order_share": {
+      "value": 0.5,
+      "status": "sourced",
+      "note": "GHN 'Phi tao don thu hoi' = 50% of outbound fee (same for Viettel Post). Cost of a courier pickup of the empty pack."
+    },
+    "pack_collection_method": {
+      "value": "courier_pickup",
+      "status": "assumption",
+      "note": "courier_pickup = pay pickup_order_share; dropoff = customer returns pack on next delivery / drop point at ~0 cost (recovery then uses dropoff_recovery_target)."
+    },
+    "failed_delivery_return_free": {
+      "value": true,
+      "status": "sourced",
+      "note": "GHN, SPX, Best: 'mien phi chuyen hoan'. A refused (bom) parcel comes back free, pack unopened."
+    },
+    "failed_delivery_rate": {
+      "value": 0.1,
+      "status": "sourced",
+      "note": "VECOM via Nguoi Lao Dong/Tuoi Tre 19/07/2025: 'bom hang' 8-12% (up to 20% remote areas). tuoitre.vn/nld/nhuc-nhoi-nan-bom-hang-19625071822023801.htm. accessed 2026-10-16. Expert (ThS Tran Anh Tung) 10-15%, 25-30% at promo peaks. Ex-ante only: rows with status Delivered are by definition not bom."
+    }
+  },
+  "co2": {
+    "single_use_kg": {
+      "value": null,
+      "status": "blank",
+      "note": "DO NOT ENTER an unsourced number."
+    },
+    "reusable_kg_per_use": {
+      "value": null,
+      "status": "blank",
+      "note": "DO NOT ENTER an unsourced number. Reusable is not automatically lower-carbon."
+    }
+  },
+  "rvs": {
+    "reusable_min": {
+      "value": 70,
+      "status": "sourced",
+      "note": "Team deck: >70 Reusable."
+    },
+    "review_min": {
+      "value": 40,
+      "status": "sourced",
+      "note": "Team deck: 40-69 Review; <40 Single-use."
+    },
+    "weights_v2": {
+      "value": {
+        "cost": 0.55,
+        "pack_return": 0.3,
+        "cycles": 0.15
+      },
+      "status": "team_decision",
+      "note": "Adopted by the team (2026-10-17). RVS v2 = 0.55 cost advantage + 0.30 pack return probability + 0.15 reuse cycles. Replaces deck v1 (return 0.35, cycles 0.25, cost 0.25, distance 0.15): return probability was counted twice and distance barely changes cost. Guard: never REUSABLE if reusable is more expensive."
+    },
+    "cost_full_score_saving": {
+      "value": 0.25,
+      "status": "assumption",
+      "note": "Saving of 25% of the single-use pack cost earns the full 100 cost points."
+    }
+  },
+  "generator": {
+    "seed": {
+      "value": 42,
+      "status": "assumption",
+      "note": ""
+    },
+    "target_return_rate": {
+      "value": 0.24,
+      "status": "sourced",
+      "note": "POST-DELIVERY return rate. Coresight 24.4% (US apparel). US proxy; no strong Vietnam source for post-delivery returns (Sapo blog: fashion 8-12% 'under control'). Sensitivity 0.10."
+    },
+    "base_return_rate_by_category": {
+      "value": {
+        "T-shirt": 0.12,
+        "Accessories": 0.1,
+        "Shirt": 0.2,
+        "Activewear": 0.2,
+        "Trousers": 0.22,
+        "Outerwear": 0.24,
+        "Jeans": 0.26,
+        "Dress": 0.35
+      },
+      "status": "assumption",
+      "note": "Dress ~38% and tees ~12% anchored to US benchmarks (eightx roundup); the rest interpolated. CROSS-CHECK (real data, fit feedback not returns): ModCloth misfit rate tops 0.34, outerwear 0.34, bottoms 0.30, dresses 0.27; RentTheRunway dress 0.28, pants 0.38, coat 0.40 (Misra, Wan & McAuley, RecSys 2018). Sizing problems are similar across categories (~0.27-0.34), so the large category spread here comes from benchmarks, not from fit. Sensitivity with fit-based rates: conclusions unchanged (courier 0% / drop-off 73.5% reusable wins)."
+    },
+    "odds_multipliers": {
+      "value": {
+        "multi_size": 2.5,
+        "cod": 1.3,
+        "voucher": 1.2,
+        "qty_2plus": 1.25
+      },
+      "status": "assumption",
+      "note": "multi_size direction supported by Dressipi 2022; COD effect in Vietnam unverified."
+    },
+    "customer_trait_sd": {
+      "value": 0.6,
+      "status": "assumption",
+      "note": "Per-customer log-odds noise; makes past returns predictive."
+    },
+    "multi_size_prob_by_category": {
+      "value": {
+        "Accessories": 0.01,
+        "T-shirt": 0.04,
+        "Activewear": 0.08,
+        "Shirt": 0.1,
+        "Outerwear": 0.1,
+        "Trousers": 0.12,
+        "Dress": 0.12,
+        "Jeans": 0.15
+      },
+      "status": "assumption",
+      "note": "Source file had these blank for 4,989 rows."
+    },
+    "voucher_prob": {
+      "value": 0.3,
+      "status": "assumption",
+      "note": ""
+    },
+    "pack_recovery_target": {
+      "value": 0.7,
+      "status": "sourced",
+      "note": "Park & Waqar (2022), Canadian mailer, 30% loss. Sensitivity 0.95 = RePack self-reported with deposit + letterbox return (Circle Economy, 17/01/2025)."
+    },
+    "recovery_returned_item_log_odds": {
+      "value": 1.5,
+      "status": "assumption",
+      "note": "Customers already returning the item are more likely to send the pack back."
+    },
+    "recovery_per_10km_log_odds": {
+      "value": -0.15,
+      "status": "assumption",
+      "note": "Farther destinations recover fewer packs."
+    },
+    "dropoff_recovery_target": {
+      "value": 0.5,
+      "status": "assumption",
+      "note": "Recovery if no courier pickup and the item is not returned (customer must act on their own)."
+    }
+  },
+  "non_cost_value": {
+    "_readme": "Value (VND per order) that reusable gets credit for beyond direct cost. pack_weight_kg, fs_vnd_per_kg and mandatory_recycling_rate are SIMULATED illustrative values (status=assumption), NOT sourced. Replace with sourced values when available. Do NOT tune them to make reusable win.",
+    "pack_weight_kg": {
+      "value": 0.018,
+      "status": "sourced",
+      "note": "1 kg / 55 pcs (30x40 Ziplock HD 7 zem, Lazada khanghuystore listing)."
+    },
+    "fs_vnd_per_kg": {
+      "value": 8000,
+      "status": "assumption",
+      "note": "SIMULATED. Placeholder, not the official Fs."
+    },
+    "mandatory_recycling_rate": {
+      "value": 0.4,
+      "status": "assumption",
+      "note": "SIMULATED. Placeholder, not the Decree rate."
+    },
+    "admin_share": {
+      "value": 0.02,
+      "status": "sourced",
+      "note": "Management cost = 2% of recycling cost (Decree 05/2025, per Conventus Law summary)."
+    },
+    "epr_applies_to_client": {
+      "value": true,
+      "status": "sourced",
+      "note": "Coolmate projected 2022 revenue ~USD 19M (VIR 2022) >> VND 30bn exemption threshold."
+    },
+    "other_value_vnd_per_order": {
+      "value": 0,
+      "status": "needs_source",
+      "note": "Demo zero. Reserved for waste-handling fee, brand value, etc. once sourced."
+    }
+  },
+  "_sources_accessed": "2026-10-16",
+  "client_profile": {
+    "_readme": "Target client used to frame the demo. Public facts only; NOT Coolmate's own order data. The order dataset stays the team's simulated data.",
+    "name": {
+      "value": "Coolmate",
+      "status": "sourced",
+      "note": "Vietnamese fashion brand, founded 2019, D2C model (Vertex Ventures, 03/11/2025)."
+    },
+    "business_model": {
+      "value": "D2C",
+      "status": "sourced",
+      "note": "Sells through its own website, so it controls its own packaging. Vertex Ventures 03/11/2025: https://www.vertexventures.sg/news/coolmate-secures-series-c-funding-marking-a-new-growth-chapter-for-a-vietnamese-brand/ (accessed 2026-10-17)."
+    },
+    "orders_per_day": {
+      "value": 10000,
+      "status": "sourced",
+      "note": "'up to 10,000 orders per day', VIR 13/05/2022: https://vir.com.vn/coolmate-secures-2-million-in-series-a-funding-93459.html (accessed 2026-10-17). 2022 figure."
+    },
+    "total_orders_delivered": {
+      "value": 5000000,
+      "status": "sourced",
+      "note": "'more than 5 million orders delivered across Vietnam' over 6 years, Vertex Ventures 03/11/2025."
+    },
+    "repeat_purchase_share": {
+      "value": 0.5,
+      "status": "sourced",
+      "note": "'over half of all purchases come from returning buyers', VIR 2022. Our simulated data: 60% of orders come from customers with an earlier order."
+    },
+    "revenue_2022_usd": {
+      "value": 19000000,
+      "status": "sourced",
+      "note": "Projected 2022 revenue, VIR 2022. ~440-460 billion VND, far above the 30 billion VND EPR exemption threshold."
+    },
+    "product_lines": {
+      "value": [
+        "Men's apparel",
+        "Women's activewear (since 03/2025)",
+        "Sports socks"
+      ],
+      "status": "sourced",
+      "note": "Vertex Ventures 2025. NOT applied to the simulated data: its categories (incl. Dress, Outerwear) come from the team template; remapping needs a data change."
+    },
+    "return_policy_days": {
+      "value": 60,
+      "status": "sourced",
+      "note": "Returns/exchanges within 60 days of receipt, any reason, up to 3 times per order; excludes outlet, custom print, Sale/Deal, Basics and pack items. https://www.coolmate.me/page/dich-vu-60-ngay-doi-tra (accessed 2026-10-17)."
+    },
+    "return_fee_charged_to_customer_vnd": {
+      "value": 25000,
+      "status": "sourced",
+      "note": "25,000 VND shipping fee deducted from the refund 'nếu có' (if applicable). So returns are not always free for the customer."
+    },
+    "return_collection": {
+      "value": "courier_pickup_from_customer",
+      "status": "sourced",
+      "note": "Coolmate confirms by phone, customer hands the item to a courier. A reusable pack can ride back with the returned item."
+    },
+    "warehouse_location": {
+      "value": [
+        "Hanoi Operations Center: Lot C8, Lai Yen Industrial Park, Hoai Duc, Hanoi",
+        "HCMC Office & Operations Center: Lot C3, D2 Street, Cat Lai Industrial Park, Thu Duc City, HCMC"
+      ],
+      "status": "sourced",
+      "note": "Coolmate contact addresses (coolmate.me, URL to be copied; accessed 2026-10-17). Two operations centres, north and south. Simulation still uses one route rule from distance; with two centres more orders would be noi tinh / noi vung, which only changes pickup cost slightly (15,500 vs 18,000-19,000)."
+    },
+    "current_packaging_and_cost": {
+      "value": "Recycled-plastic poly mailer (since end of 2023); earlier biodegradable bags, black paper boxes and a wheat-starch 'Smart Bag' (2020)",
+      "status": "sourced (type) / needs_quote (cost)",
+      "note": "coolmate.me blog 22/11/2023: replaced bio bags with recycled plastic bags, 'gia thanh cua nhung tui recycle rat dat' (very expensive), no price given. coolmate.me blog 31/05/2020: Smart Bag costs 1.5-2x a normal nylon bag, has a zip and can be reused by the customer. Sensitivity (cost only, return 24%): if Coolmate's single-use bag costs 735 VND (1.5x 490) instead of 490, reusable via drop-off becomes cheaper on ~100% of orders (vs 18%); courier pickup still 0%."
+    }
+  },
+  "presets": {
+    "_readme": "Demo presets. Each overrides only the listed values; everything else uses the base config. Brands pick the closest preset at onboarding, then enter their own numbers.",
+    "kemasan_murah": {
+      "label": "Kemasan murah",
+      "packaging.single_use_mailer_vnd": 490,
+      "status": "sourced",
+      "note": "Small Shopee mailer (~20x30)."
+    },
+    "acuan_ukuran_baju": {
+      "label": "Acuan ukuran baju",
+      "packaging.single_use_mailer_vnd": 705,
+      "status": "sourced",
+      "note": "Base config. K&S Lazada 25x35 / 28x42 average."
+    },
+    "brand_premium": {
+      "label": "Brand premium, mailer berlogo",
+      "packaging.single_use_mailer_vnd": 1200,
+      "status": "sourced (approximation)",
+      "note": "Lazada Hanoi 'in tui nilong theo yeu cau (in tu 200c)' 1,200 VND/bag, MOQ 200, size not stated. Approximation, not Coolmate's own cost."
+    },
+    "brand_premium_box": {
+      "label": "Brand premium, kotak",
+      "packaging.single_use_mailer_vnd": 3400,
+      "status": "sourced (approximation)",
+      "note": "Plain kraft box 30x20x5 median ~3,400 VND. Branded/printed boxes (as in Coolmate unboxing videos) cost more."
+    }
+  }
+}
