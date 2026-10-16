@@ -112,15 +112,20 @@ export function fitLogistic(X: number[][], y: number[], C = 1): number[] {
 }
 
 /** Why a dataset cannot be used for training, or null when it can. */
-export function cannotTrain(rows: TrainRow[]): string | null {
+type T = (en: string, vi: string) => string;
+const EN: T = (en) => en;
+
+export function cannotTrain(rows: TrainRow[], t: T = EN): string | null {
   if (rows.length < MIN_TRAIN_ROWS)
-    return `Butuh minimal ${MIN_TRAIN_ROWS} order terkirim yang punya kolom was_returned; sekarang baru ${rows.length}.`;
+    return t(`At least ${MIN_TRAIN_ROWS} delivered orders with a was_returned column are needed; there are ${rows.length} now.`,
+             `Cần ít nhất ${MIN_TRAIN_ROWS} đơn đã giao có cột was_returned; hiện mới có ${rows.length}.`);
   const sorted = [...rows].sort(byDate);
   const cut = Math.floor(sorted.length * 0.75);
   for (const part of [sorted.slice(0, cut), sorted.slice(cut)]) {
     const r = part.filter((x) => x.was_returned === 1).length;
     if (r === 0 || r === part.length)
-      return "Data harus berisi order yang di-return dan yang tidak, baik di bagian lama maupun bagian terbaru.";
+      return t("The data must contain both returned and non-returned orders, in both the older and the newest part.",
+               "Dữ liệu phải có cả đơn bị hoàn và không bị hoàn, ở cả phần cũ và phần mới nhất.");
   }
   return null;
 }

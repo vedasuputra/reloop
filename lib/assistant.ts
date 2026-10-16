@@ -2,6 +2,7 @@ import type { Scored } from "@/lib/data";
 import type { Config, CollectionMethod } from "@/lib/rvs";
 import { categoryReturnRates, type Row } from "@/lib/data";
 import { KNOWLEDGE } from "@/lib/knowledge";
+import type { T, Fmt } from "@/lib/i18n";
 
 /**
  * AI assistant helpers. ReLoop computes every number; the language model only explains them.
@@ -74,7 +75,7 @@ export const SYSTEM_PROMPT = `You are the ReLoop AI assistant inside a B2B app t
 RULES
 1. Use ONLY the KNOWLEDGE below and the FACTS sent with each question. Never use outside knowledge about other companies, markets, laws or prices.
 2. Every number in your answer must appear in the FACTS or KNOWLEDGE. Copy numbers exactly; do not round them into new numbers, do not estimate, do not calculate new totals.
-3. If the answer is not in the FACTS or KNOWLEDGE, say plainly that ReLoop does not have that information, and point to the screen of the app where the user can look or enter it.
+3. If the answer is not in the FACTS or KNOWLEDGE, say plainly that ReLoop does not have that information, and point to the screen of the app where the user can look or enter it. Screen names: Dashboard, Order Analysis, AI Prediction, Recommendation, Check One Order, Scenario Simulator, Sustainability Report, AI Model, AI Assistant, Upload CSV, Cost Settings, API Integration (in Vietnamese: Tổng quan, Phân tích đơn hàng, Dự đoán AI, Đề xuất bao bì, Kiểm tra một đơn, Mô phỏng kịch bản, Báo cáo bền vững, Mô hình AI, Trợ lý AI, Tải lên CSV, Cài đặt chi phí, Tích hợp API).
 4. Never change, guess or "improve" a recommendation or score. ReLoop's numbers are final; you only explain them.
 5. Only discuss ReLoop, its data, packaging, returns and the app. Politely decline other topics.
 6. Keep answers short (at most about 150 words), plain words for a business user, in the language of the question (Indonesian, English or Vietnamese).
@@ -84,33 +85,44 @@ RULES
 KNOWLEDGE
 ${KNOWLEDGE}`;
 
-/** Template answer used when the language model is unavailable. */
-export function ruleAnswer(question: string, scored: Scored[], order: Scored | null): string {
+/** Template answer used when the language model is unavailable, in the app's language. */
+export function ruleAnswer(question: string, scored: Scored[], order: Scored | null, t: T, f: Fmt): string {
   const q = question.toLowerCase();
   const id = findOrderId(question);
   if (order) {
     const r = order.r;
     const cheaper = r.expCostReusableVnd < r.expCostSingleVnd;
-    return `Order ${order.row.order_id} (${order.order.category}) gets ${r.recommendation} with RVS ${r.rvs.toFixed(1)}. ` +
-      `Predicted return probability is ${pct(r.predReturnProb)} and the reusable pack comes back ${pct(r.packReturnProb)} of the time. ` +
-      `Reusable is expected to cost ${vnd(r.expCostReusableVnd)} versus ${vnd(r.expCostSingleVnd)} for single-use, so it is ${cheaper ? "cheaper" : "more expensive"}. ` +
-      `Cost advantage carries 55% of the score, which is why ${cheaper ? "it scores well" : "it cannot reach REUSABLE"}.`;
+    return t(
+      `Order ${order.row.order_id} (${order.order.category}) gets ${r.recommendation} with RVS ${f.n(r.rvs, 1)}. ` +
+      `Predicted return probability is ${f.pct(r.predReturnProb)} and the reusable pack comes back ${f.pct(r.packReturnProb)} of the time. ` +
+      `Reusable is expected to cost ${f.vnd(r.expCostReusableVnd)} versus ${f.vnd(r.expCostSingleVnd)} for single-use, so it is ${cheaper ? "cheaper" : "more expensive"}. ` +
+      `Cost advantage carries 55% of the score, which is why ${cheaper ? "it scores well" : "it cannot reach REUSABLE"}.`,
+      `Đơn ${order.row.order_id} (${order.order.category}) được đề xuất ${r.recommendation} với RVS ${f.n(r.rvs, 1)}. ` +
+      `Xác suất hoàn hàng dự đoán là ${f.pct(r.predReturnProb)} và túi tái sử dụng quay về trong ${f.pct(r.packReturnProb)} trường hợp. ` +
+      `Chi phí dự kiến của bao bì tái sử dụng là ${f.vnd(r.expCostReusableVnd)}, so với ${f.vnd(r.expCostSingleVnd)} cho bao bì dùng một lần, tức là ${cheaper ? "rẻ hơn" : "đắt hơn"}. ` +
+      `Lợi thế chi phí chiếm 55% số điểm, nên ${cheaper ? "đơn này đạt điểm tốt" : "đơn này không thể đạt REUSABLE"}.`);
   }
-  if (id) return `I could not find order ${id} in the selected data set. Check the order ID in Order Analysis.`;
+  if (id) return t(`I could not find order ${id} in the selected data set. Check the order ID in Order Analysis.`,
+                   `Không tìm thấy đơn ${id} trong bộ dữ liệu đang chọn. Hãy kiểm tra mã đơn ở trang Phân tích đơn hàng.`);
   if (/kategori|category|danh m/.test(q)) {
     const cats = [...new Set(scored.map((s) => s.row.category))].map((c) => {
       const l = scored.filter((s) => s.row.category === c);
-      return { c, rvs: l.reduce((t, s) => t + s.r.rvs, 0) / l.length, reu: l.filter((s) => s.r.recommendation === "REUSABLE").length };
+      return { c, rvs: l.reduce((a, s) => a + s.r.rvs, 0) / l.length, reu: l.filter((s) => s.r.recommendation === "REUSABLE").length };
     }).sort((a, b) => b.rvs - a.rvs);
-    return `Categories by average RVS: ${cats.map((x) => `${x.c} ${x.rvs.toFixed(1)} (${x.reu} REUSABLE)`).join(", ")}. ` +
-      `Higher RVS means reusable packaging makes more sense.`;
+    const list = cats.map((x) => `${x.c} ${f.n(x.rvs, 1)} (${x.reu} REUSABLE)`).join(", ");
+    return t(`Categories by average RVS: ${list}. Higher RVS means reusable packaging makes more sense.`,
+             `Danh mục theo RVS trung bình: ${list}. RVS càng cao thì bao bì tái sử dụng càng hợp lý.`);
   }
   const count = (rec: string) => scored.filter((s) => s.r.recommendation === rec).length;
-  const base = scored.reduce((t, s) => t + s.r.expCostSingleVnd, 0);
-  const reloop = scored.reduce((t, s) => t + (s.r.recommendation === "REUSABLE" ? s.r.expCostReusableVnd : s.r.expCostSingleVnd), 0);
-  return `Out of ${scored.length} orders, ReLoop recommends REUSABLE for ${count("REUSABLE")}, REVIEW for ${count("REVIEW")} and SINGLE-USE for ${count("SINGLE-USE")}. ` +
-    `Packaging would cost ${vnd(reloop)} following ReLoop versus ${vnd(base)} with single-use only. ` +
-    `Ask about a specific order (for example "why is O000123 single-use?") or about categories.`;
+  const base = scored.reduce((a, s) => a + s.r.expCostSingleVnd, 0);
+  const reloop = scored.reduce((a, s) => a + (s.r.recommendation === "REUSABLE" ? s.r.expCostReusableVnd : s.r.expCostSingleVnd), 0);
+  return t(
+    `Out of ${f.n(scored.length)} orders, ReLoop recommends REUSABLE for ${f.n(count("REUSABLE"))}, REVIEW for ${f.n(count("REVIEW"))} and SINGLE-USE for ${f.n(count("SINGLE-USE"))}. ` +
+    `Packaging would cost ${f.vnd(reloop)} following ReLoop versus ${f.vnd(base)} with single-use only. ` +
+    `Ask about a specific order (for example "why is O000123 single-use?") or about categories.`,
+    `Trong ${f.n(scored.length)} đơn, ReLoop đề xuất REUSABLE cho ${f.n(count("REUSABLE"))} đơn, REVIEW cho ${f.n(count("REVIEW"))} đơn và SINGLE-USE cho ${f.n(count("SINGLE-USE"))} đơn. ` +
+    `Chi phí bao bì là ${f.vnd(reloop)} nếu theo ReLoop, so với ${f.vnd(base)} nếu chỉ dùng bao bì dùng một lần. ` +
+    `Hãy hỏi về một đơn cụ thể (ví dụ "vì sao O000123 là single-use?") hoặc về các danh mục.`);
 }
 
 /** Call Google Gemini (free tier). Returns null when there is no key or the call fails. */

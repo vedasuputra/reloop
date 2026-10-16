@@ -16,11 +16,11 @@ export async function POST(req: Request) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Body harus berupa JSON." }, { status: 400 });
+    return NextResponse.json({ error: "Body must be JSON." }, { status: 400 });
   }
   const orders = Array.isArray(body?.orders) ? body.orders : null;
-  if (!orders || orders.length === 0) return NextResponse.json({ error: 'Kirim "orders": [ ... ].' }, { status: 400 });
-  if (orders.length > MAX_ORDERS) return NextResponse.json({ error: `Maksimal ${MAX_ORDERS} order per request.` }, { status: 400 });
+  if (!orders || orders.length === 0) return NextResponse.json({ error: 'Send "orders": [ ... ].' }, { status: 400 });
+  if (orders.length > MAX_ORDERS) return NextResponse.json({ error: `At most ${MAX_ORDERS} orders per request.` }, { status: 400 });
 
   const method: CollectionMethod = body.method === "dropoff" ? "dropoff" : "courier_pickup";
   const preset = PRESETS.some((p) => p.key === body.preset) ? body.preset : DEFAULT_PRESET;
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     const o = orders[i] ?? {};
     const missing = REQUIRED.filter((k) => o[k] === undefined || o[k] === null || o[k] === "");
     if (missing.length) {
-      return NextResponse.json({ error: `Order ke-${i + 1}: kolom ${missing.join(", ")} wajib diisi.` }, { status: 400 });
+      return NextResponse.json({ error: `Order ${i + 1}: ${missing.join(", ")} is required.` }, { status: 400 });
     }
     const order: Order = {
       category: String(o.category),
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
 
 export async function GET() {
   return NextResponse.json({
-    usage: "POST JSON ke /api/score",
+    usage: "POST JSON to /api/score",
     example: {
       method: "dropoff",
       preset: "acuan_ukuran_baju",

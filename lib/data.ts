@@ -169,12 +169,7 @@ export function categoryReturnRates(rows: Row[]): Map<string, { rate: number; n:
   return new Map([...acc].map(([c, [s, n]]) => [c, { rate: s / n, n }]));
 }
 
-export const vnd = (x: number) => Math.round(x).toLocaleString("id-ID") + " VND";
-export const pct = (x: number) => Math.round(x * 100) + "%";
-export const METHOD_LABEL: Record<CollectionMethod, string> = {
-  courier_pickup: "Dijemput kurir",
-  dropoff: "Drop-off (tanpa kurir)",
-};
+// Formatting and labels live in lib/i18n.ts (fmt, methodLabel, presetLabel).
 
 /** Delivered orders with a was_returned label, in the shape the trainer needs. */
 export function trainingRows(rows: Row[]) {

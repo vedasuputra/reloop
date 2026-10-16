@@ -11,7 +11,7 @@ ABOUT RELOOP AI
 RETURN MODEL
 - Logistic regression. Features: bought more than one size, COD payment, voucher used, 2 or more items, customer has earlier orders, customer's past return rate, product category (reference category Accessories).
 - The built-in model is trained on SIMULATED data with a time-based split (oldest 75% train, newest 25% test). Its AUC (about 0.66 vs 0.63 for a category-only baseline) shows the pipeline works, not real-world accuracy.
-- A brand can retrain the model on its own orders (screen "Model AI", at least 200 delivered orders with a was_returned column). This is the Custom AI Model.
+- A brand can retrain the model on its own orders (screen "AI Model", at least 200 delivered orders with a was_returned column). This is the Custom AI Model.
 
 REUSE VIABILITY SCORE (RVS v2)
 - RVS = 0.55 x cost advantage + 0.30 x chance the reusable pack comes back + 0.15 x reuse cycles. Each part is 0-100.
@@ -24,12 +24,13 @@ PACK COLLECTION METHODS
 - Courier pickup: a courier collects the empty pack; this adds a pickup fee, so reusable is usually more expensive.
 - Drop-off: the customer returns the pack without a courier (no pickup fee) but fewer packs come back.
 
-COSTS (reference values; each brand can enter its own on "Pengaturan biaya")
+COSTS (reference values; each brand can enter its own on "Cost Settings")
 - Sourced from public listings (Lazada, Shopee, laundry prices, GHN courier tariffs). Single-use mailer and box, reusable zip bag, reuse cycles (assumption 10), cleaning per reuse.
-- Brand presets: Kemasan murah, Acuan ukuran baju, Brand premium (logo mailer), Brand premium (box).
+- Brand presets: Low-cost packaging, Clothing-size reference, Premium brand (logo mailer), Premium brand (box).
 
 APP SCREENS
-- Dashboard, Order Analysis (with CSV download for the packing team), AI Prediction, Recommendation, Cek Satu Order (score a single order), Scenario Simulator (10-40% reusable), Upload CSV, Pengaturan biaya, Laporan Sustainability (packs and plastic avoided, illustrative EPR), Model AI (retrain), Integrasi API (POST /api/score), Asisten AI.
+- Dashboard, Order Analysis (with CSV download for the packing team), AI Prediction, Recommendation, Check One Order (score a single order), Scenario Simulator (10-40% reusable), Sustainability Report (packs and plastic avoided, illustrative EPR), AI Model (retrain), AI Assistant, Upload CSV, Cost Settings, API Integration (POST /api/score).
+- The app is available in English and Vietnamese (EN/VI switch at the top).
 
 LIMITS (say these honestly when relevant)
 - All demo orders are simulated. Behaviour (who returns, pack recovery) is simulated; prices are sourced.

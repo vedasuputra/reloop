@@ -4,6 +4,7 @@ import Nav from "@/components/Nav";
 import { createClient } from "@/lib/supabase/server";
 import { scoreOrder, withPreset } from "@/lib/rvs";
 import { baseConfig, model, PRESETS } from "@/lib/data";
+import { getT } from "@/lib/i18n";
 
 const EXAMPLE = {
   method: "dropoff",
@@ -18,13 +19,14 @@ const EXAMPLE = {
 export default function Integration() {
   return (
     <main className="mx-auto max-w-3xl p-6">
-      <Suspense fallback={<p>Memuat…</p>}><Content /></Suspense>
+      <Suspense fallback={<p>…</p>}><Content /></Suspense>
     </main>
   );
 }
 
 async function Content() {
   await connection();
+  const { t } = await getT();
   const { data: { user } } = await (await createClient()).auth.getUser();
   const o = EXAMPLE.orders[0];
   const r = scoreOrder(withPreset(baseConfig, EXAMPLE.preset), model, o, "dropoff");
@@ -40,22 +42,22 @@ async function Content() {
   return (
     <>
       <Nav email={user?.email} />
-      <h1 className="text-2xl font-bold mb-3">Integrasi API</h1>
+      <h1 className="text-2xl font-bold mb-3">{t("API Integration", "Tích hợp API")}</h1>
       <p className="text-sm mb-4">
-        Sistem order brand bisa mengirim order ke ReLoop dan langsung menerima rekomendasi kemasan, tanpa membuka dashboard.
-        Endpoint ini tidak menyimpan data.
+        {t("A brand's order system can send orders to ReLoop and get packaging recommendations back right away, without opening the dashboard. This endpoint does not store any data.",
+           "Hệ thống đơn hàng của thương hiệu có thể gửi đơn đến ReLoop và nhận ngay đề xuất bao bì mà không cần mở bảng điều khiển. Endpoint này không lưu dữ liệu.")}
       </p>
-      <h2 className="font-semibold mb-1">Request</h2>
+      <h2 className="font-semibold mb-1">{t("Request", "Yêu cầu")}</h2>
       <pre className="overflow-x-auto rounded border p-3 text-xs">{`POST /api/score
 Content-Type: application/json
 
 ${JSON.stringify(EXAMPLE, null, 2)}`}</pre>
-      <h2 className="font-semibold mt-4 mb-1">Response (dihitung langsung)</h2>
+      <h2 className="font-semibold mt-4 mb-1">{t("Response (calculated live)", "Phản hồi (tính trực tiếp)")}</h2>
       <pre className="overflow-x-auto rounded border p-3 text-xs">{JSON.stringify(response, null, 2)}</pre>
       <ul className="text-sm list-disc pl-5 mt-4">
-        <li>method: <code>courier_pickup</code> atau <code>dropoff</code></li>
+        <li>method: <code>courier_pickup</code> {t("or", "hoặc")} <code>dropoff</code></li>
         <li>preset: {PRESETS.map((p) => p.key).join(", ")}</li>
-        <li>Wajib per order: category, payment_method, quantity_of_item, estimated_delivery_distance_km. Maksimal 1.000 order per request.</li>
+        <li>{t("Required per order: category, payment_method, quantity_of_item, estimated_delivery_distance_km. At most 1,000 orders per request.", "Bắt buộc cho mỗi đơn: category, payment_method, quantity_of_item, estimated_delivery_distance_km. Tối đa 1.000 đơn mỗi yêu cầu.")}</li>
       </ul>
     </>
   );
