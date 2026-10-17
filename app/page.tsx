@@ -115,8 +115,8 @@ async function Content() {
               <em className="italic">{t("Choose the right package.", "Chọn đúng bao bì.")}</em>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed opacity-90">
-              {t("ReLoop AI decides, order by order, whether a reusable pack or a single-use pack makes sense — so fashion brands cut single-use packaging without paying more for it. We sell decisions, not packaging.",
-                 "ReLoop AI quyết định cho từng đơn hàng nên dùng bao bì tái sử dụng hay dùng một lần — giúp thương hiệu thời trang giảm bao bì dùng một lần mà không tốn thêm chi phí. Chúng tôi bán quyết định, không bán bao bì.")}
+              {t("ReLoop AI decides, order by order, whether a reusable pack or a single-use pack makes sense so fashion brands cut single-use packaging without paying more for it. We sell decisions, not packaging.",
+                 "ReLoop AI quyết định cho từng đơn hàng nên dùng bao bì tái sử dụng hay dùng một lần giúp thương hiệu thời trang giảm bao bì dùng một lần mà không tốn thêm chi phí. Chúng tôi bán quyết định, không bán bao bì.")}
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link href={cta} className={`${BTN} bg-white text-[#174538]`}>{ctaLabel} →</Link>
@@ -323,7 +323,7 @@ async function Content() {
           <SectionHead title={t("The Loopies", "Đội Loopies")} />
           <div className="mt-12 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              ["Diva Meilla Sinaga, B.M.", t("Business development & partnerships", "Phát triển kinh doanh & đối tác")],
+              ["Diva Meilla Sinaga, B.M.", t("Business dev. & partnerships", "Phát triển kinh doanh & đối tác")],
               ["Permata Andini Nisyah, B.M.", t("Finance, impact & compliance", "Tài chính, tác động & tuân thủ")],
               ["Aisha Nasywa Emiliana, B.Eng.", t("Operations & recovery system", "Vận hành & hệ thống thu hồi")],
               ["I Ketut Veda Suputra, B.Cs.", t("AI, website, data & product", "AI, website, dữ liệu & sản phẩm")],
