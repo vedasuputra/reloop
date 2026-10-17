@@ -12,7 +12,7 @@ export function LoginTrigger({ className, children }: { className?: string; chil
 }
 
 export type LoginCopy = {
-  title: string; demo: string; password: string; passwordHint: string; login: string; signup: string; close: string; note: string;
+  title: string; demo: string; guideTitle: string; guide: string; password: string; passwordHint: string; login: string; signup: string; close: string; note: string;
 };
 
 /**
@@ -69,12 +69,17 @@ export default function LoginModal({ copy, fontClass = "" }: { copy: LoginCopy; 
           <h2 className="font-[family-name:var(--font-display)] text-4xl font-normal leading-tight tracking-tight">{copy.title}</h2>
           <p className="mt-2 whitespace-nowrap text-xs text-[#355E3B]/70">{copy.demo}</p>
 
-          {error && <p role="alert" className="mt-5 rounded-[9px] border border-[#174538]/25 bg-[#FFFDD0] px-3.5 py-2.5 text-sm">{error}</p>}
+          <div className="mt-5 rounded-[9px] border border-[#d4e3a9] bg-[#F5FBE2] px-4 py-3 text-xs leading-relaxed">
+            <p className="font-semibold">{copy.guideTitle}</p>
+            {copy.guide.split("\n").map((para) => <p key={para} className="mt-1">{para}</p>)}
+          </div>
+
+          {error && <p role="alert" className="mt-4 rounded-[9px] border border-[#174538]/25 bg-[#FFFDD0] px-3.5 py-2.5 text-sm">{error}</p>}
 
           <form className="mt-6 space-y-3">
             <label className="block text-sm font-semibold">
               Email
-              <input name="email" type="email" required autoComplete="email" placeholder="demo@reloop.app" className={INPUT} />
+              <input name="email" type="email" required autoComplete="email" placeholder="name@coolmate.me" className={INPUT} />
             </label>
             <label className="block text-sm font-semibold">
               {copy.password}

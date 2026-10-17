@@ -7,7 +7,6 @@ import LangSwitch from "@/components/LangSwitch";
 import Section from "@/components/Section";
 import { BTN_PRIMARY, CARD, GREEN, H, LINK, Notice, PageTitle, TABLE_BOX, TH, TR, Tag } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
-import { isDemoAccount } from "@/lib/account";
 import { getT, type T } from "@/lib/i18n";
 import { deleteAccount } from "./actions";
 
@@ -36,7 +35,7 @@ async function Content({ searchParams }: { searchParams: Promise<Record<string, 
   const sp = await searchParams;
   const { lang, t } = await getT();
   const { data: { user } } = await (await createClient()).auth.getUser();
-  const account: Account = { signedIn: !!user, isDemo: isDemoAccount(user?.email), error: sp.error };
+  const account: Account = { signedIn: !!user, error: sp.error };
   const title = t("Data & Privacy", "Dữ liệu & Quyền riêng tư");
   const intro = t("This is a competition prototype. All demo orders are simulated: there is no real customer data in it. Please do not upload real personal data. Below is what the prototype stores, where, and what a real pilot would add.",
     "Đây là bản mẫu dự thi. Toàn bộ đơn hàng demo là dữ liệu mô phỏng, không có dữ liệu khách hàng thật. Vui lòng không tải lên dữ liệu cá nhân thật. Dưới đây là những gì bản mẫu lưu trữ, lưu ở đâu, và những gì một chương trình thí điểm thật sẽ bổ sung.");
@@ -81,7 +80,7 @@ async function Content({ searchParams }: { searchParams: Promise<Record<string, 
   );
 }
 
-type Account = { signedIn: boolean; isDemo: boolean; error?: string };
+type Account = { signedIn: boolean; error?: string };
 
 function Sections({ t, account }: { t: T; account: Account }) {
   const fields: [string, string, string][] = [
@@ -143,8 +142,8 @@ function Sections({ t, account }: { t: T; account: Account }) {
           </div>
           <div className={CARD}>
             <p className="text-xs text-[#355E3B]">{t("Who can see it", "Ai được xem")}</p>
-            <p className="mt-2 font-semibold">{t("Each company sees only its own data", "Mỗi doanh nghiệp chỉ thấy dữ liệu của mình")}</p>
-            <p className="mt-2 text-sm leading-relaxed text-[#355E3B]">{t("Row-level security in the database checks membership on every query. The demo data set is read-only.", "Bảo mật cấp dòng trong cơ sở dữ liệu kiểm tra quyền thành viên ở mọi truy vấn. Bộ dữ liệu demo chỉ để xem.")}</p>
+            <p className="mt-2 font-semibold">{t("Each organisation sees only its own data", "Mỗi tổ chức chỉ thấy dữ liệu của mình")}</p>
+            <p className="mt-2 text-sm leading-relaxed text-[#355E3B]">{t("Row-level security in the database checks membership on every query. The sample data set is read-only.", "Bảo mật cấp dòng trong cơ sở dữ liệu kiểm tra quyền thành viên ở mọi truy vấn. Bộ dữ liệu mẫu chỉ để xem.")}</p>
           </div>
         </div>
       </Section>
@@ -184,43 +183,34 @@ function Sections({ t, account }: { t: T; account: Account }) {
       <Section title={t("Deleting data", "Xóa dữ liệu")} i={5}>
         <div className={CARD}>
           <p className="text-sm leading-relaxed">
-            {t("A company can delete all of its orders at any time on the ", "Doanh nghiệp có thể xóa toàn bộ đơn hàng của mình bất cứ lúc nào ở trang ")}
+            {t("Your organisation can delete all of its orders at any time on the ", "Tổ chức của bạn có thể xóa toàn bộ đơn hàng bất cứ lúc nào ở trang ")}
             <Link href="/upload" className={LINK}>{t("Upload data (CSV)", "Tải dữ liệu lên (CSV)")}</Link>
             {t(" page and its saved model on the ", " và xóa mô hình đã lưu ở trang ")}
             <Link href="/model" className={LINK}>{t("AI Model", "Mô hình AI")}</Link>
-            {t(" page. An account you created yourself can also be deleted for good, together with its data, once you are signed in; the shared demo account cannot be deleted.",
-              ". Tài khoản do chính bạn tạo cũng có thể được xóa vĩnh viễn cùng dữ liệu của nó sau khi đăng nhập; tài khoản demo dùng chung không thể bị xóa.")}
+            {t(" page. You can also delete your own account once you are signed in: that removes your login and your own data, while the organisation's data stays for your colleagues.",
+              ". Bạn cũng có thể xóa tài khoản của chính mình sau khi đăng nhập: thao tác này xóa tài khoản đăng nhập và dữ liệu riêng của bạn, còn dữ liệu của tổ chức vẫn được giữ lại cho đồng nghiệp.")}
           </p>
 
           {account.error && <Notice tone="warn" role="alert" className="mt-4">{account.error}</Notice>}
 
           {account.signedIn && (
             <div className="mt-4 border-t border-[#174538]/10 pt-4">
-              {account.isDemo ? (
-                <>
-                  <button type="button" disabled className="inline-flex h-10 cursor-not-allowed items-center rounded-[9px] border border-[#174538]/25 bg-white px-5 text-sm font-semibold opacity-50">
-                    {t("Delete my account", "Xóa tài khoản của tôi")}
-                  </button>
-                  <p className="mt-2 text-xs text-[#355E3B]">{t("This is the shared demo account, so it cannot be deleted.", "Đây là tài khoản demo dùng chung nên không thể xóa.")}</p>
-                </>
-              ) : (
-                <details className="group">
-                  <summary className="inline-flex h-10 cursor-pointer list-none items-center rounded-[9px] border border-[#174538]/40 bg-white px-5 text-sm font-semibold transition-opacity hover:opacity-85 [&::-webkit-details-marker]:hidden">
-                    {t("Delete my account", "Xóa tài khoản của tôi")}
-                  </summary>
-                  <div className="mt-4">
-                    <p className="text-sm leading-relaxed text-[#355E3B]">
-                      {t("This permanently deletes your login and everything in your own data sets: orders, cost settings and saved model. The demo data is not touched. This cannot be undone.",
-                        "Thao tác này xóa vĩnh viễn tài khoản đăng nhập và mọi thứ trong các bộ dữ liệu của riêng bạn: đơn hàng, cài đặt chi phí và mô hình đã lưu. Dữ liệu demo không bị ảnh hưởng. Không thể hoàn tác.")}
-                    </p>
-                    <form action={deleteAccount} className="mt-4">
-                      <button className="inline-flex h-10 cursor-pointer items-center rounded-[9px] border border-[#174538]/40 bg-[#FFFDD0] px-5 text-sm font-semibold transition-opacity hover:opacity-85">
-                        {t("Yes, delete my account", "Đúng, xóa tài khoản của tôi")}
-                      </button>
-                    </form>
-                  </div>
-                </details>
-              )}
+              <details className="group">
+                <summary className="inline-flex h-10 cursor-pointer list-none items-center rounded-[9px] border border-[#174538]/40 bg-white px-5 text-sm font-semibold transition-opacity hover:opacity-85 [&::-webkit-details-marker]:hidden">
+                  {t("Delete my account", "Xóa tài khoản của tôi")}
+                </summary>
+                <div className="mt-4">
+                  <p className="text-sm leading-relaxed text-[#355E3B]">
+                    {t("This permanently deletes your login and your own data (orders, cost settings and saved model). Your organisation's data is not touched. This cannot be undone.",
+                      "Thao tác này xóa vĩnh viễn tài khoản đăng nhập và dữ liệu riêng của bạn (đơn hàng, cài đặt chi phí và mô hình đã lưu). Dữ liệu của tổ chức không bị ảnh hưởng. Không thể hoàn tác.")}
+                  </p>
+                  <form action={deleteAccount} className="mt-4">
+                    <button className="inline-flex h-10 cursor-pointer items-center rounded-[9px] border border-[#174538]/40 bg-[#FFFDD0] px-5 text-sm font-semibold transition-opacity hover:opacity-85">
+                      {t("Yes, delete my account", "Đúng, xóa tài khoản của tôi")}
+                    </button>
+                  </form>
+                </div>
+              </details>
             </div>
           )}
         </div>

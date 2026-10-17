@@ -24,7 +24,7 @@ export async function retrainModel(formData: FormData) {
   const { t } = await getT();
   const orgId = String(formData.get("org") ?? "");
   if (!(await canEdit(orgId)))
-    back(orgId, "error", t("You don't have permission to train a model for this data set. Choose \"My data\".", "Bạn không có quyền huấn luyện mô hình cho bộ dữ liệu này. Hãy chọn \"Dữ liệu của tôi\"."));
+    back(orgId, "error", t("You don't have permission to train a model for this data set. Choose your organisation's data set.", "Bạn không có quyền huấn luyện mô hình cho bộ dữ liệu này. Hãy chọn bộ dữ liệu của tổ chức bạn."));
   const rows = trainingRows(await fetchOrders(orgId));
   const why = cannotTrain(rows, t);
   if (why) back(orgId, "error", why);

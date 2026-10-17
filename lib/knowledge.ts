@@ -35,6 +35,8 @@ APP SCREENS
 - The app is available in English and Vietnamese (EN/VI switch at the top).
 
 LIMITS (say these honestly when relevant)
+- DATA: every person sees three data sets in the Data dropdown: the shared sample data (simulated, read-only), their organisation's data (already prepared with the organisation's cost settings, read-only for employees) and their own data, which starts empty and is where they upload their own orders and set their own costs.
+- ACCESS: ReLoop AI is B2B. Only business emails of subscribed organisations can sign up or log in (for the prototype: any address ending with @coolmate.me; only the domain is checked). Subscriptions are arranged by personal contact; an employee cannot change the plan in the app. The plan shows under the email in the sidebar (Growth for Coolmate) and opens a read-only details popup.
 - All demo orders are simulated. Behaviour (who returns, pack recovery) is simulated; prices are sourced.
 - CO2 impact is NOT estimated: there is no sourced emission factor yet. Reusable is not automatically lower-carbon.
 - EPR (Vietnam Decree 05/2025): the report shows no EPR figure yet. It appears only once the official Fs rate and mandatory recycling rate are entered in the configuration; the placeholders in the model are never shown. EPR credits are excluded from all results.

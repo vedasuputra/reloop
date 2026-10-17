@@ -13,6 +13,7 @@ import LoginModal, { LoginTrigger } from "@/components/LoginModal";
 import SmoothLink from "@/components/SmoothLink";
 import { getT, type T, type Fmt } from "@/lib/i18n";
 import { TARGETS } from "@/lib/targets";
+import { TIERS, contactHref } from "@/lib/subscription";
 
 /**
  * Public landing page (no login needed). Promotes the product and states the one flow.
@@ -65,7 +66,7 @@ async function Content() {
   const metrics = (model as { metrics?: { auc_model?: number; auc_baseline_category_mean?: number } }).metrics ?? {};
 
   const cta = user ? "/dashboard" : "/login";
-  const ctaLabel = user ? t("Open the app", "Mở ứng dụng") : t("Try the live demo", "Dùng thử bản demo");
+  const ctaLabel = user ? t("Open the app", "Mở ứng dụng") : t("Get started", "Bắt đầu");
 
   const steps: [string, string][] = [
     [t("Upload orders", "Tải đơn hàng lên"), t("CSV export from any system, or our API. No integration needed to start.", "Xuất CSV từ bất kỳ hệ thống nào, hoặc dùng API. Không cần tích hợp để bắt đầu.")],
@@ -292,20 +293,22 @@ async function Content() {
       <section id="pricing" className="mx-auto max-w-6xl px-6 py-24">
         <SectionHead title={t("Simple SaaS pricing", "Bảng giá SaaS đơn giản")} />
         <div className="mt-12 grid gap-3 md:grid-cols-3">
-          {[
-            ["Starter", "3M", t("One brand, CSV workflow, dashboard, simulator and report.", "Một thương hiệu, quy trình CSV, tổng quan, mô phỏng và báo cáo.")],
-            ["Growth", "7M", t("API integration, custom AI model, multiple data sets.", "Tích hợp API, mô hình AI riêng, nhiều bộ dữ liệu.")],
-            ["Enterprise", "15M", t("Multi-warehouse, scheduled retraining, priority support.", "Nhiều kho, huấn luyện lại định kỳ, hỗ trợ ưu tiên.")],
-          ].map(([name, price, text], i) => {
+          {TIERS.map((tier, i) => {
             const featured = i === 1;
             return (
-              <div key={name} className={`rounded-[9px] border p-7 ${featured ? "border-[#264840] bg-gradient-to-b from-[#2F594F] to-[#264840] text-[#FFFEF6]" : "border-[#174538]/25 bg-[#FFFEF6]"}`}>
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold">{name}</h3>
-                </div>
-                <p className={`${NUM} mt-3 text-5xl`}>{price}</p>
+              <div key={tier.key} className={`flex flex-col rounded-[9px] border p-7 ${featured ? "border-[#264840] bg-gradient-to-b from-[#2F594F] to-[#264840] text-[#FFFEF6]" : "border-[#174538]/25 bg-[#FFFEF6]"}`}>
+                <h3 className="font-semibold">{tier.name}</h3>
+                <p className={`${NUM} mt-3 text-5xl`}>{tier.priceM}M</p>
                 <p className="mt-2 text-sm opacity-75">VND/{t("month", "tháng")}</p>
-                <p className="mt-4 text-sm leading-relaxed opacity-85">{text}</p>
+                <p className="mt-4 text-sm font-medium">{t(...tier.tagline)}</p>
+                <ul className="mt-4 space-y-2.5 border-t border-current/15 pt-4 text-sm leading-relaxed">
+                  {tier.benefits.map((b) => (
+                    <li key={b[0]} className="flex gap-2.5">
+                      <svg aria-hidden width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="mt-[3px] shrink-0 opacity-80"><path d="M3.5 8.5 6.5 11.5 12.5 4.5" /></svg>
+                      <span className="opacity-90">{t(...b)}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             );
           })}
@@ -314,6 +317,14 @@ async function Content() {
           {t("Plus a one-time 15M VND integration fee. Add-ons: premium ESG/EPR reports, custom models, consulting. Planning prices, not signed contracts.",
              "Cộng phí tích hợp một lần 15 triệu VND. Dịch vụ thêm: báo cáo ESG/EPR nâng cao, mô hình riêng, tư vấn. Giá dự kiến, chưa phải hợp đồng đã ký.")}
         </p>
+        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-[9px] border border-[#174538]/25 bg-white p-5">
+          <p className="min-w-[16rem] max-w-2xl flex-1 text-balance text-sm leading-relaxed">
+            <b className="font-semibold">{t("Plans are arranged by personal contact.", "Gói dịch vụ được thiết lập qua liên hệ trực tiếp.")}</b>{" "}
+            {t("ReLoop AI is sold to organisations: once your organisation has subscribed, everyone with a company email can sign in.",
+               "ReLoop AI được bán cho tổ chức: khi tổ chức của bạn đã đăng ký, mọi người dùng email công ty đều có thể đăng nhập.")}
+          </p>
+          <a href={contactHref("ReLoop AI subscription")} className={`${BTN} bg-[#174538] text-[#FFFEF6] sm:ml-auto`}>{t("Contact us", "Liên hệ")}</a>
+        </div>
       </section>
 
       {/* Team */}
@@ -356,10 +367,14 @@ async function Content() {
           login: t("Log in", "Đăng nhập"),
           signup: t("Sign up", "Đăng ký"),
           close: t("Close", "Đóng"),
-          demo: t("Demo account: demo@reloop.app / pass: reloop", "Tài khoản demo: demo@reloop.app / pass: reloop"),
+          demo: t("Use your company email, e.g. name@coolmate.me", "Dùng email công ty của bạn, ví dụ name@coolmate.me"),
+          guideTitle: t("For judges and viewers", "Dành cho ban giám khảo và người xem"),
+          guide: t(
+            "Please register with an email address ending in @coolmate.me. The part before the @ is not checked; your own name is sufficient, for example yourname@coolmate.me.\nAs this is a prototype, the address is not verified and no email will be sent. Choose a password of at least 6 characters and select Sign up. On subsequent visits, select Log in.",
+            "Vui lòng đăng ký bằng địa chỉ email có đuôi @coolmate.me. Phần trước dấu @ không được kiểm tra; quý vị chỉ cần dùng tên của mình, ví dụ tenban@coolmate.me.\nVì đây là bản mẫu nên địa chỉ email không được xác minh và sẽ không có email nào được gửi. Vui lòng đặt mật khẩu tối thiểu 6 ký tự và chọn Đăng ký. Từ lần truy cập sau, vui lòng chọn Đăng nhập."),
           note: t(
-            "The demo account is shared, so its data may change when others use it. Sign up for your own account to try CSV upload, cost settings and retraining undisturbed. All demo orders are simulated.",
-            "Tài khoản demo được dùng chung nên dữ liệu có thể thay đổi khi người khác sử dụng. Hãy đăng ký tài khoản riêng để thử tải CSV, cài đặt chi phí và huấn luyện lại mà không bị ảnh hưởng. Toàn bộ đơn hàng demo là dữ liệu mô phỏng."),
+            "ReLoop AI is sold to organisations: only organisations that have subscribed can sign in. All demo orders are simulated.",
+            "ReLoop AI được bán cho tổ chức: chỉ tổ chức đã đăng ký mới đăng nhập được. Toàn bộ đơn hàng demo là dữ liệu mô phỏng."),
         }} />
       )}
 

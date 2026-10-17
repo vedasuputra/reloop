@@ -62,7 +62,7 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
     ]) },
   ];
   const wrong = test.length ? wrongCases(test, model) : [];
-  const myData = t("“My data”", "“Dữ liệu của tôi”");
+  const myData = t("your own data", "dữ liệu riêng của bạn");
   const aucNow: number | undefined = current.metrics?.auc_model;
   const aucBase: number | undefined = current.metrics?.auc_baseline_category_mean;
   // AUC 0.5 is a coin flip, so the bars run from 0.5 to 1

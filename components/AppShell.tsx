@@ -1,11 +1,14 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { Inter, EB_Garamond } from "next/font/google";
 import { logout } from "@/app/login/actions";
 import LangSwitch from "@/components/LangSwitch";
 import AssistantWidget from "@/components/AssistantWidget";
 import SideNav, { type NavGroup } from "@/components/SideNav";
 import SidebarFrame from "@/components/SidebarFrame";
+import SubscriptionBadge, { type SubscriptionInfo } from "@/components/SubscriptionBadge";
+import OnboardingRocket from "@/components/OnboardingRocket";
+import { contactHref, dayMonth, orgForEmail, tierOf } from "@/lib/subscription";
 import { getT } from "@/lib/i18n";
 
 /**
@@ -38,16 +41,37 @@ export default async function AppShell({ qs = "", email, footerNote, children }:
     ] },
   ];
   const privacy = t("Data & Privacy", "Dữ liệu & Quyền riêng tư");
+
+  // The plan of the organisation this person belongs to (found from the email domain), shown under their email
+  const org = orgForEmail(email);
+  const tier = org ? tierOf(org) : null;
+  const subscription: SubscriptionInfo | null = org && tier ? {
+    tier: tier.name,
+    price: t(`${tier.priceM}M VND per month`, `${tier.priceM} triệu VND mỗi tháng`),
+    organisation: org.name,
+    started: dayMonth(lang, org.startedOn),
+    renews: dayMonth(lang, org.renewsOn),
+    benefits: tier.benefits.map((b) => t(...b)),
+    contactHref: contactHref(`ReLoop AI subscription (${org.name})`),
+    labels: {
+      open: t("Subscription details", "Chi tiết gói đăng ký"), title: t("Your subscription", "Gói đăng ký của bạn"), plan: t("Plan", "Gói"),
+      organisation: t("Organisation", "Tổ chức"), started: t("Started on", "Bắt đầu ngày"), renews: t("Renews on", "Gia hạn ngày"), includes: t("What is included", "Bao gồm"),
+      note: t("Subscriptions are arranged by personal contact, so the plan cannot be changed from your account.", "Gói đăng ký được thiết lập qua liên hệ trực tiếp, nên không thể thay đổi từ tài khoản của bạn."),
+      contact: t("Contact us", "Liên hệ"), close: t("Close", "Đóng"),
+    },
+  } : null;
   // The assistant answers about the data set and settings chosen on this page
   const q = new URLSearchParams(qs.replace(/^\?/, ""));
   return (
     <div className={`${body.variable} ${display.variable} flex min-h-screen w-full flex-col font-[family-name:var(--font-body)] text-[#174538] md:flex-row`}>
       <SidebarFrame openLabel={t("Open menu", "Mở menu")} closeLabel={t("Close menu", "Đóng menu")}
-        logo={<Link href={"/dashboard" + qs} className="text-lg font-semibold uppercase tracking-[0.12em]">ReLoop AI</Link>}>
+        logo={<Link href={"/dashboard" + qs} className="text-lg font-semibold uppercase tracking-[0.12em]">ReLoop AI</Link>}
+        extra={email ? <Suspense fallback={null}><OnboardingRocket qs={qs} fontClass={`${body.className} ${display.variable}`} /></Suspense> : null}>
         <SideNav groups={GROUPS} qs={qs} />
         <div className="mt-auto space-y-4 px-7">
           {/* w-0 + min-w-full: a long email is cut short instead of making the sidebar wider */}
           {email && <p className="w-0 min-w-full truncate text-xs opacity-70">{email}</p>}
+          {subscription && <SubscriptionBadge info={subscription} fontClass={`${body.className} ${display.variable}`} />}
           {/* Same size as the language buttons on the landing page, with Log out right beside them */}
           <div className="flex items-center gap-3">
             <LangSwitch lang={lang} size="lg" tone="dark" />
