@@ -24,11 +24,20 @@ export interface ReportRow {
   eprSimVnd: number | null;
 }
 
+/**
+ * True when both numbers the EPR figure rests on (the Fs rate and the mandatory recycling rate under Decree 05/2025) are official,
+ * i.e. their status in data/config.json is "sourced". While they are placeholders ("assumption"), no EPR figure is shown anywhere.
+ */
+export function eprIsOfficial(cfg: Config): boolean {
+  const N = cfg.non_cost_value as unknown as Record<string, { status?: string }>;
+  return N.fs_vnd_per_kg?.status === "sourced" && N.mandatory_recycling_rate?.status === "sourced";
+}
+
 export function buildReport(scored: Scored[], cfg: Config): ReportRow[] {
   const cycles = cfg.packaging.reuse_cycles.value as number;
   const boxCats = cfg.packaging.box_categories.value as string[];
   const N = cfg.non_cost_value;
-  const eprPerKg = N.fs_vnd_per_kg.value != null && N.mandatory_recycling_rate.value != null && N.epr_applies_to_client.value
+  const eprPerKg = eprIsOfficial(cfg) && N.fs_vnd_per_kg.value != null && N.mandatory_recycling_rate.value != null && N.epr_applies_to_client.value
     ? N.mandatory_recycling_rate.value * N.fs_vnd_per_kg.value * (1 + (N.admin_share.value ?? 0)) : null;
 
   const groups = new Map<string, Scored[]>();

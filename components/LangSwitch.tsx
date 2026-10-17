@@ -2,6 +2,10 @@
 import { useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
+function saveLang(l: "en" | "vi") {
+  document.cookie = `lang=${l}; path=/; max-age=31536000; samesite=lax`;
+}
+
 /** EN / VN toggle. Saves the choice in a cookie for a year, then reloads the server-rendered page. */
 export default function LangSwitch({ lang, size = "sm", tone = "light" }: { lang: "en" | "vi"; size?: "sm" | "lg"; tone?: "light" | "dark" }) {
   const router = useRouter();
@@ -13,7 +17,7 @@ export default function LangSwitch({ lang, size = "sm", tone = "light" }: { lang
 
   const set = (l: "en" | "vi") => {
     if (l === lang) return;
-    document.cookie = `lang=${l}; path=/; max-age=31536000; samesite=lax`;
+    saveLang(l);
     startTransition(() => router.refresh());
   };
   const box = size === "lg" ? "rounded-[9px] px-4 py-2.5 leading-5" : "rounded px-2 py-0.5";

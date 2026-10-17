@@ -58,7 +58,7 @@ export default function MultiSelect({ name, label, options, selected, allLabel, 
       <p id={`${id}-label`} className="text-sm font-semibold">{label}</p>
       <button type="button" aria-haspopup="listbox" aria-expanded={open} aria-labelledby={`${id}-label`}
         onClick={() => setOpen((o) => !o)}
-        className={`mt-1.5 flex w-full cursor-pointer items-center justify-between gap-3 rounded-[9px] border bg-[#FFFEF6] px-3 py-2 text-left text-sm text-[#174538] outline-none transition-colors hover:border-[#174538]/60 focus-visible:border-[#174538] ${open ? "border-[#174538]" : "border-[#174538]/25"}`}>
+        className={`mt-1.5 flex h-10 w-full cursor-pointer items-center justify-between gap-3 rounded-[9px] border bg-white px-3 py-2 text-left text-sm text-[#174538] outline-none transition-colors hover:border-[#174538]/60 focus-visible:border-[#174538] ${open ? "border-[#174538]" : "border-[#174538]/25"}`}>
         <span className="truncate">{summary}</span>
         <svg aria-hidden width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
           className={`shrink-0 transition-transform ${open ? "rotate-180" : ""}`}><path d="M2.5 4.5 6 8l3.5-3.5" /></svg>

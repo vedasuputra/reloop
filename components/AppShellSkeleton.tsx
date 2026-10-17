@@ -11,9 +11,13 @@ export default function AppShellSkeleton() {
       <aside className="flex flex-col gap-4 bg-gradient-to-b from-[#2F594F] to-[#264840] py-4 text-[#FFFEF6] md:sticky md:top-0 md:h-screen md:w-[300px] md:shrink-0 md:gap-8 md:py-7">
         <div className="px-4 text-lg font-semibold uppercase tracking-[0.12em] md:px-7">ReLoop AI</div>
         <div className="hidden space-y-1 md:block">
-          {[0, 1, 2, 3, 4].map((i) => <div key={i} className={bar} />)}
+          <div className={bar} />
           <div className="h-6" />
-          {[5, 6, 7, 8].map((i) => <div key={i} className={bar} />)}
+          {[1, 2, 3].map((i) => <div key={i} className={bar} />)}
+          <div className="h-6" />
+          {[4, 5, 6].map((i) => <div key={i} className={bar} />)}
+          <div className="h-6" />
+          {[7, 8, 9].map((i) => <div key={i} className={bar} />)}
         </div>
       </aside>
       <main className="flex min-w-0 flex-1 flex-col bg-[#FFFEF6]">

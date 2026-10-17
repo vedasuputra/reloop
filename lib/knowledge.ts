@@ -29,7 +29,7 @@ COSTS (reference values; each brand can enter its own on "Cost Settings")
 - Brand presets: Low-cost packaging, Clothing-size reference, Premium brand (logo mailer), Premium brand (box).
 
 APP SCREENS
-- Main menu: Dashboard (overview + pilot targets), Orders (list of orders with CSV download for the packing team; click an order for its detail page with the return prediction, the factors behind it, the RVS breakdown and cost; "+ Score a new order" to type in a single order), Simulator (10-40% reusable, RVS vs random), Report (sustainability: packs and plastic avoided, illustrative EPR), AI Model (retrain on own data, fairness by group, wrong cases).
+- Main menu: Dashboard (overview + pilot targets), Orders (list of orders with CSV download for the packing team; click an order for its detail page with the return prediction, the factors behind it, the RVS breakdown and cost; "+ Score a new order" to type in a single order), Simulator (10-40% reusable, RVS vs random, courier pickup and drop-off side by side, scaled to a daily order volume), Pack recovery (forward and reverse loop, five return channels to validate, damaged vs lost packs, effective cycles and fleet size), Report (sustainability: packs and plastic avoided net of lost bags; no EPR figure is shown until official figures are entered), AI Model (retrain on own data, fairness by group, wrong cases), Pilot plan (roadmap, live Go / No-Go gate preview, risks and Plan B, scaling).
 - Settings menu: Upload data (CSV), Cost settings, API integration (POST /api/score). Footer: Data & Privacy.
 - AI assistant: the "Ask AI" button in the bottom-right corner of every page.
 - The app is available in English and Vietnamese (EN/VI switch at the top).
@@ -37,11 +37,11 @@ APP SCREENS
 LIMITS (say these honestly when relevant)
 - All demo orders are simulated. Behaviour (who returns, pack recovery) is simulated; prices are sourced.
 - CO2 impact is NOT estimated: there is no sourced emission factor yet. Reusable is not automatically lower-carbon.
-- EPR figures (Vietnam Decree 05/2025) use placeholder recycling rates and Fs values, so they are illustrative only.
+- EPR (Vietnam Decree 05/2025): the report shows no EPR figure yet. It appears only once the official Fs rate and mandatory recycling rate are entered in the configuration; the placeholders in the model are never shown. EPR credits are excluded from all results.
 - No pilot with a real brand has been run yet.
 
 BUSINESS MODEL
 - Main revenue: monthly SaaS subscription. Planning prices (not signed contracts): Starter 3M VND/month (one brand, CSV workflow, dashboard, simulator, report), Growth 7M VND/month (API integration, custom AI model, multiple data sets), Enterprise 15M VND/month (multi-warehouse, scheduled retraining, priority support). One-time integration fee 15M VND. Add-ons: premium ESG/EPR reports, custom models, consulting.
-- Pilot plan (12 months): M1-3 historical-data pilot in shadow mode, M4-6 live API and return-channel test, M7-12 retrain and scale only if the gates are met. Targets by month 12: AUC at least 0.70, 80% of packs returned without a courier, 400 single-use packs avoided per 1,000 orders, at least 15% packaging cost saving vs all single-use.
-- Team (the Loopies): Diva Meilla Sinaga (business development & partnerships), Permata Andini Nisyah (finance, impact & compliance), Aisha Nasywa Emiliana (operations & recovery system), I Ketut Veda Suputra (AI, website, data & product). UEH Business Challenge 2026.
+- Pilot plan (12 months, four phases): M1-2 discover and govern, M3-4 configure the B2B MVP, M5-7 one-brand pilot in shadow mode, M8-12 retrain and scale only if the gates are met. Targets by month 12: AUC at least 0.70, 80% of packs returned without a courier, 400 single-use packs avoided per 1,000 orders, at least 15% packaging cost saving vs all single-use.
+- Team (the Loopies): Diva Meilla Nisyah (business development & partnerships), Permata Andini Sinaga (finance, impact & compliance), Aisha Nasywa Emiliana (operations & recovery system), I Ketut Veda Suputra (AI, website, data & product). UEH Business Challenge 2026.
 `;

@@ -45,10 +45,10 @@ function niceMax(v: number): number {
 /* ------------------------------------------------------------------ hover tooltips */
 
 /** A hover area in chart units (x, y, w, h) plus the point (ax, ay) the tooltip points at. */
-interface Cell { x: number; y: number; w: number; h: number; ax: number; ay: number; text: string; round?: boolean }
+export interface Cell { x: number; y: number; w: number; h: number; ax: number; ay: number; text: string; round?: boolean }
 
 /** Invisible cells laid over a chart; each shows its tooltip immediately on hover or focus. */
-function HoverLayer({ W, H, cells }: { W: number; H: number; cells: Cell[] }) {
+export function HoverLayer({ W, H, cells }: { W: number; H: number; cells: Cell[] }) {
   return (
     <div className="pointer-events-none absolute inset-0">
       {cells.map((c, i) => {
@@ -370,6 +370,56 @@ export function DotPlot({ rows, fmtN, fmtPct, labels }: {
           <HoverLayer W={W} H={H} cells={cells} />
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ plastic per month (sustainability report) */
+
+export interface PlasticPoint { key: string; avoided: number; used: number }
+
+/** A round axis maximum for any size of number (also below 1): 1, 2, 3, 4, 5, 6, 8 or 10 times a power of ten. */
+function niceMaxAny(v: number): number {
+  if (!(v > 0)) return 1;
+  const p = 10 ** Math.floor(Math.log10(v));
+  return ([1, 2, 3, 4, 5, 6, 8, 10].map((k) => k * p).find((m) => m >= v)) ?? 10 * p;
+}
+
+/** Per month, two bars side by side: plastic avoided (single-use mailers not used, dark teal) and new reusable-pack plastic (light teal). */
+export function PlasticChart({ months, fmt, tip, label }: {
+  months: PlasticPoint[]; fmt: (n: number) => string; tip: (m: PlasticPoint) => string; label: string;
+}) {
+  const W = 1000, H = 230, L = 56, R = 10, T = 14, B = 28;
+  const pw = W - L - R, ph = H - T - B, bw = pw / months.length;
+  const max = niceMaxAny(Math.max(...months.flatMap((m) => [m.avoided, m.used])));
+  const y = (v: number) => T + ph - (v / max) * ph;
+  const step = Math.ceil(months.length / 12);
+  const short = (k: string) => `${k.slice(5)}/${k.slice(2, 4)}`;
+  const gap = Math.min(10, bw * 0.2), bar = Math.max(1, (bw - gap * 2) / 2 - 1);
+  const cells: Cell[] = months.map((m, i) => ({
+    x: L + i * bw, y: T, w: bw, h: ph, ax: L + i * bw + bw / 2, ay: Math.min(y(Math.max(m.avoided, m.used)), T + ph - 4), text: tip(m),
+  }));
+  return (
+    <div className="relative">
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label} className="block h-auto w-full">
+        {[0, max / 2, max].map((v) => (
+          <g key={v}>
+            <line x1={L} x2={W - R} y1={y(v)} y2={y(v)} stroke={INK} strokeOpacity={v === 0 ? 0.35 : 0.1} />
+            <text x={L - 8} y={y(v) + 4} textAnchor="end" fontSize="11" fill={MUTED}>{fmt(v)}</text>
+          </g>
+        ))}
+        {months.map((m, i) => {
+          const x0 = L + i * bw + gap;
+          return (
+            <g key={m.key}>
+              <rect x={x0} y={y(m.avoided)} width={bar} height={Math.max(0, T + ph - y(m.avoided))} rx="1.5" fill={TEAL} />
+              <rect x={x0 + bar + 2} y={y(m.used)} width={bar} height={Math.max(0, T + ph - y(m.used))} rx="1.5" fill={TEAL_LIGHT} />
+              {i % step === 0 && <text x={L + i * bw + bw / 2} y={H - 8} textAnchor="middle" fontSize="11" fill={MUTED}>{short(m.key)}</text>}
+            </g>
+          );
+        })}
+      </svg>
+      <HoverLayer W={W} H={H} cells={cells} />
     </div>
   );
 }

@@ -32,7 +32,7 @@ export default function LiveSearch({ name, label, placeholder, defaultValue }: {
   };
 
   return (
-    <label className="block w-full text-sm font-semibold sm:w-72">
+    <label className="block min-w-[14rem] flex-[2] text-sm font-semibold">
       {label}
       <input ref={input} name={name} value={value} placeholder={placeholder} autoComplete="off"
         onChange={(e) => {
@@ -42,7 +42,7 @@ export default function LiveSearch({ name, label, placeholder, defaultValue }: {
           if (timer.current) clearTimeout(timer.current);
           timer.current = setTimeout(() => go(form), 350);
         }}
-        className="mt-1.5 w-full rounded-[9px] border border-[#174538]/25 bg-[#FFFEF6] px-3 py-2 text-sm font-normal text-[#174538] outline-none transition-colors placeholder:text-[#355E3B]/60 focus:border-[#174538]" />
+        className="mt-1.5 h-10 w-full rounded-[9px] border border-[#174538]/25 bg-white px-3 py-2 text-sm font-normal text-[#174538] outline-none transition-colors placeholder:text-[#355E3B]/60 focus:border-[#174538]" />
     </label>
   );
 }

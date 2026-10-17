@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PRESETS, CUSTOM_PRESET, baseConfig } from "@/lib/data";
-import { DEMO_ORG, type OrgInfo } from "@/lib/context";
+import type { OrgInfo } from "@/lib/context";
+import { orgOptions as orgSelectOptions } from "@/components/orgOptions";
 import { withPreset } from "@/lib/rvs";
 import { getT, presetLabel } from "@/lib/i18n";
 import DescribedSelect from "@/components/DescribedSelect";
@@ -30,12 +31,6 @@ export default async function Controls({
     [CUSTOM_PRESET]: t("Your own pack prices and courier costs from Cost settings.", "Giá bao bì và cước vận chuyển của bạn trong Cài đặt chi phí."),
   };
 
-  const orgOptions = orgs.map((o) => ({
-    value: o.id, label: o.name,
-    description: o.id === DEMO_ORG
-      ? t("Shared demo orders, all simulated.", "Đơn hàng demo dùng chung, toàn bộ là dữ liệu mô phỏng.")
-      : t("Your own orders and settings.", "Đơn hàng và cài đặt của riêng bạn."),
-  }));
   const presetOptions = [
     ...(hasCustom ? [CUSTOM_PRESET] : []), ...PRESETS.map((p) => p.key),
   ].map((key) => ({ value: key, label: presetLabel(t, key, PRESETS.find((p) => p.key === key)?.label), description: PRESET_DESC[key] }));
@@ -50,7 +45,7 @@ export default async function Controls({
     <form action={action} className="rounded-[9px] border border-[#174538]/15 bg-white">
       {Object.entries(hidden).map(([k, v]) => <input key={k} type="hidden" name={k} value={v} />)}
       <div className="grid gap-5 p-5 md:grid-cols-3">
-        <DescribedSelect name="org" label={t("Data", "Dữ liệu")} defaultValue={orgId} options={orgOptions} />
+        <DescribedSelect name="org" label={t("Data", "Dữ liệu")} defaultValue={orgId} options={orgSelectOptions(orgs, t)} />
         <DescribedSelect name="preset" label={t("Brand type (single-use packaging)", "Loại thương hiệu (bao bì dùng một lần)")} defaultValue={presetKey} options={presetOptions} />
         <DescribedSelect name="method" label={t("How packs come back", "Cách thu hồi bao bì")} defaultValue={method} options={methodOptions} />
       </div>

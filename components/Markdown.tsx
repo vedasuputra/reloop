@@ -13,7 +13,7 @@ function inline(text: string, key: string): ReactNode[] {
     const tok = m[0];
     const k = `${key}-${i++}`;
     if (tok.startsWith("**") || tok.startsWith("__")) out.push(<strong key={k}>{tok.slice(2, -2)}</strong>);
-    else if (tok.startsWith("`")) out.push(<code key={k} className="rounded bg-black/5 px-1">{tok.slice(1, -1)}</code>);
+    else if (tok.startsWith("`")) out.push(<code key={k} className="rounded bg-black/5 px-1 font-[inherit]">{tok.slice(1, -1)}</code>);
     else out.push(<em key={k}>{tok.slice(1, -1)}</em>);
     last = m.index + tok.length;
   }

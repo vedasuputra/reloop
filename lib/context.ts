@@ -6,15 +6,22 @@ import { getT, orgLabel } from "@/lib/i18n";
 
 export const DEMO_ORG = "00000000-0000-0000-0000-000000000001";
 
-export interface OrgInfo { id: string; name: string; role: string }
+export interface OrgInfo { id: string; name: string; role: string; orders: number }
 
 /** Organisations the logged-in user belongs to (demo + their own). */
 export async function getOrgs(): Promise<OrgInfo[]> {
   const supabase = await createClient();
   const { t } = await getT();
   const { data } = await supabase.from("members").select("org_id, role, organizations(name)");
-  return (data ?? []).map((m: any) => ({
-    id: m.org_id, role: m.role, name: orgLabel(t, m.organizations?.name ?? t("Organisation", "Tổ chức")),
+  type Member = { org_id: string; role: string; organizations: { name?: string } | null };
+  const members = (data ?? []) as unknown as Member[];
+  // How many orders each data set holds, so an empty one (a new account that has not uploaded anything) can be greyed out in the pickers
+  const counts = await Promise.all(members.map(async (m) => {
+    const { count } = await supabase.from("orders").select("*", { count: "exact", head: true }).eq("org_id", m.org_id);
+    return count ?? 0;
+  }));
+  return members.map((m, i) => ({
+    id: m.org_id, role: m.role, name: orgLabel(t, m.organizations?.name ?? t("Organisation", "Tổ chức")), orders: counts[i],
   })).sort((a, b) => (a.id === DEMO_ORG ? -1 : b.id === DEMO_ORG ? 1 : 0));
 }
 

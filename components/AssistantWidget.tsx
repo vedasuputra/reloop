@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useState, useSyncExternalStore, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import AssistantChat from "@/components/AssistantChat";
 
@@ -13,8 +13,8 @@ export default function AssistantWidget({ org, preset, method, lang, variant = "
   fontClass?: string; // the page's font class: the widget lives in <body>, outside the page wrapper
 }) {
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  // false while the page is rendered on the server, true in the browser
+  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
   if (!mounted) return null;
 
   const brand = variant === "brand";

@@ -11,10 +11,10 @@ export const model = modelJson as unknown as Model;
 
 /** Demo presets from config.json (key + label). */
 export const PRESETS: { key: string; label: string }[] = Object.entries(
-  (configJson as any).presets ?? {},
+  (configJson as unknown as { presets?: Record<string, { label: string }> }).presets ?? {},
 )
   .filter(([k]) => !k.startsWith("_"))
-  .map(([k, v]: [string, any]) => ({ key: k, label: v.label }));
+  .map(([k, v]) => ({ key: k, label: v.label }));
 
 export const DEFAULT_PRESET = "acuan_ukuran_baju";
 

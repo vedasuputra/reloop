@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 /**
@@ -7,15 +7,18 @@ import { usePathname, useSearchParams } from "next/navigation";
  * the old ones, so the table never looks frozen. It lifts as soon as the new address has arrived.
  */
 export default function TableVeil({ children, rows = 9 }: { children: ReactNode; rows?: number }) {
-  const [busy, setBusy] = useState(false);
   const pathname = usePathname();
   const search = useSearchParams().toString();
-
-  useEffect(() => setBusy(false), [pathname, search]); // the new address has arrived
+  const address = `${pathname}?${search}`;
+  // The address the page was at when the veil went up: once the address changes, the new rows have arrived and the veil lifts
+  const [busyAt, setBusyAt] = useState<string | null>(null);
+  const busy = busyAt === address;
+  const addressRef = useRef(address);
+  useEffect(() => { addressRef.current = address; });
 
   useEffect(() => {
-    const on = () => setBusy(true);
-    const off = () => setBusy(false);
+    const on = () => setBusyAt(addressRef.current);
+    const off = () => setBusyAt(null);
     // links that stay on this page but change its address (sorting, page numbers, chips, clear filters)
     const click = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -23,7 +26,7 @@ export default function TableVeil({ children, rows = 9 }: { children: ReactNode;
       if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
       const u = new URL(a.href, location.href);
       if (u.origin !== location.origin || u.pathname !== location.pathname || u.search === location.search) return;
-      setBusy(true);
+      setBusyAt(addressRef.current);
     };
     window.addEventListener("reloop:loading", on);
     window.addEventListener("reloop:loaded", off);

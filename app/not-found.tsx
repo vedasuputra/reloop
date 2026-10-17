@@ -1,12 +1,11 @@
-import Link from "next/link";
+import StatusPage from "@/components/StatusPage";
 
-/** Static (no cookies here), so both languages are shown. */
+const TEXT = {
+  en: { title: "Page not found", body: "This address does not exist in ReLoop AI." },
+  vi: { title: "Không tìm thấy trang", body: "Địa chỉ này không tồn tại trong ReLoop AI." },
+};
+
+/** Unknown address. Same look as the error page; the language comes from the browser's cookie, with the EN / VN switch on the page. */
 export default function NotFound() {
-  return (
-    <main className="mx-auto max-w-xl p-6 space-y-3">
-      <h1 className="text-2xl font-bold">Page not found · Không tìm thấy trang</h1>
-      <p>This address does not exist in ReLoop AI. · Địa chỉ này không tồn tại trong ReLoop AI.</p>
-      <Link href="/dashboard" className="underline">Back to the Dashboard · Về trang Tổng quan</Link>
-    </main>
-  );
+  return <StatusPage text={TEXT} />;
 }

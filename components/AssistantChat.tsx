@@ -54,8 +54,8 @@ const PAGE: Record<string, { en: string[]; vi: string[] }> = {
     vi: ["Bộ mô phỏng so sánh những gì?", "Vì sao cách thu hồi bao bì làm thay đổi chi phí?", "Kết quả mô phỏng có phải từ thí điểm thật không?", RVS_Q.vi],
   },
   "/report": {
-    en: ["What does the report show?", "Why is CO2 not estimated?", "What are the EPR figures based on?", "Are these results from a real pilot?"],
-    vi: ["Báo cáo này cho thấy điều gì?", "Vì sao chưa ước tính CO2?", "Các số liệu EPR dựa trên cơ sở nào?", "Các kết quả này có phải từ thí điểm thật không?"],
+    en: ["What does the report show?", "Why is CO2 not estimated?", "Why is there no EPR figure?", "Are these results from a real pilot?"],
+    vi: ["Báo cáo này cho thấy điều gì?", "Vì sao chưa ước tính CO2?", "Vì sao chưa có số liệu EPR?", "Các kết quả này có phải từ thí điểm thật không?"],
   },
   "/model": {
     en: ["How does the AI predict returns?", "Which factors does the model use?", "Is the built-in model accurate in the real world?", "How do I retrain the model on my own orders?"],
@@ -98,11 +98,10 @@ export default function AssistantChat({ org, preset, method, lang, variant = "pl
   // The chat only renders in the browser (the widget waits until it is mounted), so reading the address here is safe
   const orderId = new URLSearchParams(window.location.search).get("order");
   const L = { ...TXT[lang], suggestions: suggestionsFor(path, lang, orderId) };
-  const [msgs, setMsgs] = useState<Msg[]>([]);
   // Keep the conversation while the user moves between pages (this browser tab only)
-  useEffect(() => {
-    try { const saved = sessionStorage.getItem("reloop-chat"); if (saved) setMsgs(JSON.parse(saved)); } catch {}
-  }, []);
+  const [msgs, setMsgs] = useState<Msg[]>(() => {
+    try { const saved = sessionStorage.getItem("reloop-chat"); return saved ? (JSON.parse(saved) as Msg[]) : []; } catch { return []; }
+  });
   useEffect(() => {
     try { sessionStorage.setItem("reloop-chat", JSON.stringify(msgs.slice(-20))); } catch {}
   }, [msgs]);

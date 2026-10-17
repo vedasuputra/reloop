@@ -10,22 +10,25 @@ import MultiSelect from "@/components/MultiSelect";
 import SoftForm from "@/components/SoftForm";
 import LiveSearch from "@/components/LiveSearch";
 import TableVeil from "@/components/TableVeil";
+import OrderLink from "@/components/OrderLink";
+import OrderPopup from "@/components/OrderPopup";
 import DownloadIcon from "@/components/DownloadIcon";
 import RecPill from "@/components/RecPill";
-import Section from "@/components/Section";
 import { BAND, TEAL, TRACK_COLOR } from "@/components/DashboardCharts";
 import { loadContext } from "@/lib/context";
 import type { Params, Scored } from "@/lib/data";
 import { instructionCode, reviewPlan, settingsItems, topFactor } from "@/lib/orderView";
+import { buildOrderDetail, categoryBaselines, orderLabels } from "@/lib/orderDetail";
+import { methodLabel } from "@/lib/i18n";
 
 const PAGE_SIZE = 50;
 
 export const metadata = { title: "Orders" };
 
 const H = "font-[family-name:var(--font-display)] font-normal tracking-tight";
-const BTN = "inline-flex items-center gap-2 rounded-[9px] px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-85";
+const BTN = "inline-flex h-10 items-center gap-2 rounded-[9px] px-5 text-sm font-semibold transition-opacity hover:opacity-85"; // 40px with or without a border, like the inputs
 const PAGE_BTN = "inline-flex h-9 min-w-9 items-center justify-center rounded-[9px] border px-3 text-sm font-semibold transition-colors";
-const INPUT = "w-full rounded-[9px] border border-[#174538]/25 bg-[#FFFEF6] px-3 py-2 text-sm text-[#174538] outline-none transition-colors placeholder:text-[#355E3B]/60 focus:border-[#174538]";
+const INPUT = "h-10 w-full rounded-[9px] border border-[#174538]/25 bg-[#FFFEF6] px-3 py-2 text-sm text-[#174538] outline-none transition-colors placeholder:text-[#355E3B]/60 focus:border-[#174538]";
 /** Staggered fade-in: each block starts a little after the previous one. */
 const rise = (i: number) => ({ "--d": `${i * 0.08}s` }) as CSSProperties;
 
@@ -70,7 +73,7 @@ export default function Orders({ searchParams }: { searchParams: Promise<Params>
 async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   await connection();
   const sp = await searchParams;
-  const { user, method, presetKey, cfg, model, orgs, orgId, scored, qs, hasCustom, t, f } = await loadContext(sp);
+  const { user, method, presetKey, cfg, model, modelLabel, orgs, orgId, scored, qs, hasCustom, t, f } = await loadContext(sp);
 
   const list = (v?: string) => (v ?? "").split(",").filter(Boolean);
   const cats = list(sp.category);
@@ -109,6 +112,14 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   };
   const catOptions = tally((s) => s.row.category);
   const destOptions = tally((s) => s.row.address ?? "");
+
+  // Details for the order popup: every order on this page (so it opens at once), plus the one named in the address, if any
+  const baselines = categoryBaselines(scored);
+  const wantedId = (sp.order ?? "").trim().toUpperCase();
+  const extra = wantedId ? scored.find((x) => x.row.order_id.toUpperCase() === wantedId) : undefined;
+  const forPopup = new Map(shown.map((s) => [s.row.order_id, s]));
+  if (extra) forPopup.set(extra.row.order_id, extra);
+  const details = Object.fromEntries([...forPopup].map(([id, s]) => [id, buildOrderDetail({ s, baselines, cfg, model, modelLabel, method, t, f })]));
 
   // Review queue: switch the cheapest Review orders to reusable to fill a management target
   const plan = reviewPlan(scored, target);
@@ -183,7 +194,7 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
       {/* Review queue: Review orders ship single-use unless switched, to fill a management target, cheapest-saving first */}
       {(reviewTotal > 0 || plan) && (
         <div className="rl-rise mt-5 rounded-[9px] border border-[#174538]/15 bg-white p-5" style={rise(3)}>
-          <div className="grid gap-x-10 gap-y-4 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+          <div className="grid gap-x-10 gap-y-4 md:grid-cols-2">
             <div>
               <h2 className="text-base font-semibold">{t("Review queue", "Hàng đợi Review")}</h2>
               <p className="mt-1.5 text-sm leading-relaxed text-[#355E3B]">
@@ -196,9 +207,9 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
                 <input type="hidden" name="method" value={method} /><input type="hidden" name="preset" value={presetKey} /><input type="hidden" name="org" value={orgId} />
                 <input type="hidden" name="category" value={cats.join(",")} /><input type="hidden" name="dest" value={dests.join(",")} /><input type="hidden" name="rec" value={rec} /><input type="hidden" name="q" value={qRaw} />
                 <input type="hidden" name="sort" value={sortParam} /><input type="hidden" name="dir" value={dirParam} />
-                <label className="text-sm font-semibold">
+                <label className="min-w-[10rem] flex-1 text-sm font-semibold">
                   {t("Target share of Reusable orders (%)", "Tỷ lệ đơn Reusable mục tiêu (%)")}
-                  <input name="target" type="number" min={0} max={100} step={1} defaultValue={targetRaw} placeholder="20" className={`${INPUT} mt-1.5 w-44 font-normal`} />
+                  <input name="target" type="number" min={0} max={100} step={1} defaultValue={targetRaw} placeholder="20" className={`${INPUT} mt-1.5 font-normal`} />
                 </label>
                 <button className={`${BTN} cursor-pointer bg-[#174538] text-[#FFFEF6]`}>{t("Apply", "Áp dụng")}</button>
                 {plan && <Link href={listHref({ target: "", page: "" })} className={`${BTN} border border-[#174538]/40 bg-white`}>{t("Clear", "Xóa")}</Link>}
@@ -218,27 +229,25 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
       )}
 
       {/* The packing list */}
-      <Section title={t("Packing list", "Danh sách đóng gói")} i={4}
-        sub={t("One instruction for every order. Search, filter, sort and download it for the packing team.",
-          "Mỗi đơn hàng một chỉ dẫn. Tìm kiếm, lọc, sắp xếp và tải về cho đội đóng gói.")}>
+      <div className="rl-rise mt-5" style={rise(4)}>
         {/* relative z-20: the open filter lists must paint above the table */}
         <SoftForm action="/orders" className="relative z-20 flex flex-wrap items-end gap-3">
           <input type="hidden" name="method" value={method} /><input type="hidden" name="preset" value={presetKey} /><input type="hidden" name="org" value={orgId} />
           <input type="hidden" name="rec" value={rec} /><input type="hidden" name="target" value={targetRaw} />
           <input type="hidden" name="sort" value={sortParam} /><input type="hidden" name="dir" value={dirParam} />
           <LiveSearch name="q" label={t("Search order or customer", "Tìm đơn hàng hoặc khách hàng")} placeholder={t("O000123 or C01235", "O000123 hoặc C01235")} defaultValue={qRaw} />
-          <div className="w-full sm:w-56">
+          <div className="min-w-[12rem] flex-1">
             <MultiSelect name="category" label={t("Category", "Danh mục")} options={catOptions} selected={cats}
               allLabel={t("All categories", "Tất cả danh mục")} selectedWord={t("selected", "đã chọn")} clearLabel={t("Clear", "Xóa")} applyLabel={t("Apply", "Áp dụng")} />
           </div>
-          <div className="w-full sm:w-56">
+          <div className="min-w-[12rem] flex-1">
             <MultiSelect name="dest" label={t("Destination", "Nơi nhận")} options={destOptions} selected={dests}
               allLabel={t("All destinations", "Tất cả nơi nhận")} selectedWord={t("selected", "đã chọn")} clearLabel={t("Clear", "Xóa")} applyLabel={t("Apply", "Áp dụng")} />
           </div>
           {filtersOn && <Link href={listHref({ category: "", dest: "", rec: "", q: "", page: "" })} className={`${BTN} border border-[#174538]/40 bg-white`}>{t("Clear", "Xóa")}</Link>}
         </SoftForm>
 
-        <p className="mb-2 text-xs text-[#355E3B]">
+        <p className="mb-2 mt-5 text-xs text-[#355E3B]">
           {sorted.length
             ? t(`Showing ${f.n(from)} to ${f.n(to)} of ${f.n(sorted.length)} orders. The download includes every order that matches.`,
                 `Hiển thị ${f.n(from)} đến ${f.n(to)} trên ${f.n(sorted.length)} đơn. Tệp tải về gồm tất cả đơn khớp bộ lọc.`)
@@ -273,7 +282,7 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
                 return (
                   <tr key={s.row.id} className={`border-b border-[#174538]/10 last:border-0 hover:bg-[#FFFEF6] ${code === "switch" ? "bg-[#F4FBF8]" : ""}`}>
                     <td className="whitespace-nowrap px-4 py-3 align-top">
-                      <Link className="font-semibold underline underline-offset-2" href={`/order${qs}&order=${s.row.order_id}`}>{s.row.order_id}</Link>
+                      <OrderLink id={s.row.order_id} href={`/order${qs}&order=${s.row.order_id}`} className="font-semibold underline underline-offset-2">{s.row.order_id}</OrderLink>
                       <p className="mt-0.5 text-xs text-[#355E3B]">{s.row.order_date}</p>
                     </td>
                     <td className="px-4 py-3 align-top">
@@ -315,20 +324,34 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
                 <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-[#355E3B]">{t("No orders match these filters.", "Không có đơn hàng nào khớp bộ lọc.")}</td></tr>
               )}
             </tbody>
+            {/* Footer row of the table: what each recommendation means for the packing team */}
+            <tfoot>
+              <tr>
+                <td colSpan={8} className="border-t border-[#174538]/15 p-0">
+                  <div className={`grid divide-y divide-[#174538]/15 sm:divide-x sm:divide-y-0 ${plan ? "sm:grid-cols-4" : "sm:grid-cols-3"}`}>
+                    {[
+                      { bg: "#DEF4EE", dot: BAND.reusable, text: t("Reusable bag", "Túi tái sử dụng") },
+                      { bg: "#F5FBE2", dot: BAND.review, text: t("Single-use for now, supervisor decides", "Tạm dùng một lần, giám sát quyết định") },
+                      { bg: "#FFFDD0", dot: BAND.single, text: boxCats.length ? t(`Single-use mailer, or box for ${boxCats.join(", ")}`, `Túi gói hàng dùng một lần, hoặc hộp cho ${boxCats.join(", ")}`) : t("Single-use mailer", "Túi gói hàng dùng một lần") },
+                    ].map((c) => (
+                      <div key={c.text} className="flex items-center gap-2.5 px-4 py-3 text-sm font-semibold" style={{ background: c.bg }}>
+                        <span aria-hidden className="inline-block h-3 w-3 shrink-0 rounded-full" style={{ background: c.dot, boxShadow: "inset 0 0 0 1px rgba(23,69,56,0.25)" }} />
+                        {c.text}
+                      </div>
+                    ))}
+                    {plan && (
+                      <div className="flex items-center gap-2.5 bg-[#F4FBF8] px-4 py-3 text-sm font-semibold">
+                        <span aria-hidden className="inline-block h-3 w-5 shrink-0 rounded-[3px] border border-[#b7dccf] bg-white" />
+                        {t("Shaded row: switched from Review", "Hàng được tô: chuyển từ Review")}
+                      </div>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            </tfoot>
           </table>
         </div>
         </TableVeil>
-
-        {/* Footnote: what each recommendation means for the packing team */}
-        <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-1.5 text-xs text-[#355E3B]">
-          <span className="font-semibold text-[#174538]">{t("Packing instruction", "Chỉ dẫn đóng gói")}:</span>
-          <span className="flex items-center gap-2"><RecPill rec="REUSABLE" />{t("reusable bag", "túi tái sử dụng")}</span>
-          <span className="flex items-center gap-2"><RecPill rec="REVIEW" />{t("single-use for now, supervisor decides", "tạm dùng một lần, giám sát quyết định")}</span>
-          <span className="flex items-center gap-2"><RecPill rec="SINGLE-USE" />
-            {boxCats.length ? t(`single-use mailer, or box for ${boxCats.join(", ")}`, `túi gói hàng dùng một lần, hoặc hộp cho ${boxCats.join(", ")}`) : t("single-use mailer", "túi gói hàng dùng một lần")}
-          </span>
-          {plan && <span className="flex items-center gap-2"><span className="inline-block h-4 w-6 rounded-[3px] border border-[#b7dccf] bg-[#F4FBF8]" />{t("switched from Review for your target", "chuyển từ Review theo mục tiêu của bạn")}</span>}
-        </div>
 
         {/* Previous at the left edge, the numbers in the middle, Next at the right edge: the full width of the table */}
         {pages > 1 && (
@@ -348,7 +371,10 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
               : <span className={`${PAGE_BTN} border-[#174538]/15 text-[#355E3B]/50`}>{t("Next", "Sau")}</span>}
           </nav>
         )}
-      </Section>
+      </div>
+
+      <OrderPopup details={details} ids={shown.map((x) => x.row.order_id)} labels={orderLabels(t, methodLabel(t, method))}
+        initial={extra?.row.order_id ?? null} pageBase={`/order${qs}`} />
     </AppShell>
   );
 }

@@ -1,11 +1,15 @@
 "use server";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { fetchOrders, trainingRows } from "@/lib/data";
 import { trainModel, cannotTrain } from "@/lib/train";
 import { getT } from "@/lib/i18n";
 
 function back(orgId: string, key: "ok" | "error", msg: string) {
+  // The data changed, so every screen that was already visited must be fetched again: without this the browser shows its saved
+  // copy of the Dashboard and the rest from before, e.g. "My data" still looks empty right after an upload.
+  if (key === "ok") revalidatePath("/", "layout");
   redirect(`/model?org=${orgId}&${key}=${encodeURIComponent(msg)}`);
 }
 

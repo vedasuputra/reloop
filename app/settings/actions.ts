@@ -1,5 +1,6 @@
 "use server";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { CostSettings } from "@/lib/data";
 import { getT } from "@/lib/i18n";
@@ -19,6 +20,9 @@ const FIELDS: Record<keyof Omit<CostSettings, "default_method">, [number, number
 };
 
 function back(orgId: string, key: "ok" | "error", msg: string) {
+  // The data changed, so every screen that was already visited must be fetched again: without this the browser shows its saved
+  // copy of the Dashboard and the rest from before, e.g. "My data" still looks empty right after an upload.
+  if (key === "ok") revalidatePath("/", "layout");
   redirect(`/settings?org=${orgId}&${key}=${encodeURIComponent(msg)}`);
 }
 
@@ -31,7 +35,7 @@ export async function saveSettings(formData: FormData) {
 
   const out: Record<string, unknown> = {};
   for (const [k, [lo, hi]] of Object.entries(FIELDS)) {
-    let raw = String(formData.get(k) ?? "").replace(/,/g, ".").trim();
+    const raw = String(formData.get(k) ?? "").replace(/,/g, ".").trim();
     let n = Number(raw);
     if (k === "dropoff_recovery_target" || k === "pickup_order_share") n = n / 100; // form uses percent
     if (raw === "" || !Number.isFinite(n) || n < lo || n > hi) back(orgId, "error", t(`The value of "${k}" is not valid.`, `Giá trị "${k}" không hợp lệ.`));

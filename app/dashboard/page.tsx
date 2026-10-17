@@ -66,7 +66,7 @@ async function Content({ searchParams }: { searchParams: Promise<Params> }) {
   const packsPer1000 = (reusable.length / n) * 1000;
   const netPacksPer1000 = ((reusable.length - lost) / n) * 1000;
   const saving = base > 0 ? (base - withReloop) / base : 0;
-  const auc: number | undefined = (model as any).metrics?.auc_model;
+  const auc: number | undefined = (model as { metrics?: { auc_model?: number } }).metrics?.auc_model;
   const selfReturn: number = cfg.generator.dropoff_recovery_target.value;
   const clamp = (x: number) => Math.max(0, Math.min(1, x));
 

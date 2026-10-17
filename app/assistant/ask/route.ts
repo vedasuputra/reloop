@@ -9,12 +9,12 @@ import { LANDING_EXAMPLE } from "@/lib/example";
 
 /** POST /assistant/ask  { question, history, org, preset, method } -> { answer, source }. Visitors who are not logged in get general answers only. */
 export async function POST(req: Request) {
-  let body: any;
+  let body: { question?: unknown; history?: unknown; org?: string; preset?: string; method?: string } | null;
   try { body = await req.json(); } catch { return Response.json({ error: "Invalid request." }, { status: 400 }); }
   const question = String(body?.question ?? "").trim().slice(0, 500);
   if (!question) return Response.json({ error: "Type a question first." }, { status: 400 });
 
-  const history = Array.isArray(body.history) ? body.history.filter((m: any) => typeof m?.text === "string") : [];
+  const history = Array.isArray(body?.history) ? body.history.filter((m: { text?: unknown } | null) => typeof m?.text === "string") : [];
 
   // Visitor on the landing page: no data access, general answers only
   const { data: { user: visitor } } = await (await createClient()).auth.getUser();
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     return Response.json({ answer: publicRuleAnswer(t, question), source: ai ? "checked" : "rules" });
   }
 
-  const sp: Params = { org: body.org, preset: body.preset, method: body.method };
+  const sp: Params = { org: body?.org, preset: body?.preset, method: body?.method };
   const { user, scored, rows, cfg, method, modelLabel, orgId, t, f } = await loadContext(sp);
   if (!user) return Response.json({ error: t("Please log in again.", "Vui lòng đăng nhập lại.") }, { status: 401 });
 

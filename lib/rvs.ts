@@ -26,6 +26,7 @@ export interface Order {
 }
 
 /** config.json: every entry is { value, status, note }. Only shape we rely on. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- the values in config.json are numbers, lists and objects, each read with the right type where it is used
 export type Config = Record<string, Record<string, { value: any }>>;
 
 export interface Model {
@@ -164,7 +165,7 @@ export function scoreOrder(
 
 /** Apply a demo preset from config.presets (e.g. "brand_premium_box") without mutating cfg. */
 export function withPreset(cfg: Config, presetKey: string): Config {
-  const preset = (cfg as any).presets?.[presetKey];
+  const preset = (cfg as unknown as { presets?: Record<string, Record<string, unknown>> }).presets?.[presetKey];
   if (!preset) throw new Error(`Unknown preset: ${presetKey}`);
   const out: Config = JSON.parse(JSON.stringify(cfg));
   for (const [k, val] of Object.entries(preset)) {

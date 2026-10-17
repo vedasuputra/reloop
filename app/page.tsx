@@ -62,7 +62,7 @@ async function Content() {
   const perUse = cfg.packaging.reusable_pack_vnd.value / cfg.packaging.reuse_cycles.value + cfg.packaging.cleaning_per_reuse_vnd.value;
   const pickup = cfg.logistics.ghn_tariff_vnd.value.noi_tinh * cfg.logistics.pickup_order_share.value;
   const w = settingsFromConfig(cfg).weights;
-  const metrics = (model as any).metrics ?? {};
+  const metrics = (model as { metrics?: { auc_model?: number; auc_baseline_category_mean?: number } }).metrics ?? {};
 
   const cta = user ? "/dashboard" : "/login";
   const ctaLabel = user ? t("Open the app", "Mở ứng dụng") : t("Try the live demo", "Dùng thử bản demo");
@@ -243,7 +243,7 @@ async function Content() {
           <GreenStat value="25–74%" label={t("lower added cost than random selection when packs need courier pickup", "chi phí phát sinh thấp hơn so với chọn ngẫu nhiên khi cần shipper lấy bao bì")} />
           <GreenStat value={t("−231k VND", "−231 nghìn VND")} label={t("per 1,000 orders at 40% reusable with drop-off, about 25% of packaging cost", "trên 1.000 đơn ở mức 40% tái sử dụng khi khách tự gửi trả, khoảng 25% chi phí bao bì")} />
           <GreenStat value={t("~4,000", "~4.000")} label={t("single-use packs avoided per day at Coolmate's volume (~10,000 orders/day), illustrative", "bao bì dùng một lần được tránh mỗi ngày ở quy mô Coolmate (~10.000 đơn/ngày), minh họa")} />
-          <GreenStat value={metrics.auc_model ? `${f.n(metrics.auc_model, 2)} vs ${f.n(metrics.auc_baseline_category_mean, 2)}` : "-"}
+          <GreenStat value={metrics.auc_model ? `${f.n(metrics.auc_model, 2)} vs ${f.n(metrics.auc_baseline_category_mean ?? 0, 2)}` : "-"}
             label={t("return model AUC vs a category-only baseline, on newer orders", "AUC của mô hình so với mốc chỉ theo danh mục, trên các đơn mới hơn")} />
         </div>
         <div className="mt-4 rounded-[9px] border border-[#174538]/25 bg-[#FFFEF6] p-5 text-sm leading-relaxed">
@@ -258,11 +258,12 @@ async function Content() {
       {/* Roadmap + targets: deep green block */}
       <GreenSection>
         <h2 className={`${H} text-4xl md:text-5xl`}>{t("A 12-month pilot with clear gates", "Thí điểm 12 tháng với các mốc rõ ràng")}</h2>
-        <div className="mt-10 grid gap-3 md:grid-cols-3">
+        <div className="mt-10 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           {[
-            ["M1–3", t("Historical-data pilot", "Thí điểm trên dữ liệu lịch sử"), t("Shadow mode: score the brand's past orders and compare with what really happened.", "Chế độ chạy song song: chấm điểm đơn cũ của thương hiệu và so với thực tế.")],
-            ["M4–6", t("Live API + channel test", "API trực tiếp + thử kênh thu hồi"), t("Real orders, capped share, measure how many packs come back without a courier.", "Đơn thật, giới hạn tỷ lệ, đo số bao bì quay về không cần shipper.")],
-            ["M7–12", t("Retrain & scale", "Huấn luyện lại & mở rộng"), t("Retrain on real outcomes, then add warehouses and brands, only if the gates are met.", "Huấn luyện lại trên kết quả thật, rồi mở rộng kho và thương hiệu, chỉ khi đạt các mốc.")],
+            [t("M1–2", "T1–2"), t("Discover & govern", "Khảo sát & quản trị"), t("Agree data use, retention and access rules; map order, return, packaging and warehouse fields.", "Thống nhất quy tắc dùng, lưu giữ và truy cập dữ liệu; ánh xạ các trường đơn hàng, hoàn hàng, bao bì và kho.")],
+            [t("M3–4", "T3–4"), t("Configure the B2B MVP", "Cấu hình MVP B2B"), t("Brand inputs (pack price, return method, warehouses, courier tariff); the simulator updates without AI retraining.", "Đầu vào của thương hiệu (giá bao bì, cách thu hồi, kho, cước vận chuyển); bộ mô phỏng cập nhật mà không cần huấn luyện lại AI.")],
+            [t("M5–7", "T5–7"), t("One-brand pilot", "Thí điểm một thương hiệu"), t("Train on approved brand data in shadow mode: compare predictions with actual outcomes; measure recovery, loss, cleaning and total cost.", "Huấn luyện trên dữ liệu thương hiệu đã duyệt ở chế độ song song: so dự đoán với thực tế; đo thu hồi, thất lạc, vệ sinh và tổng chi phí.")],
+            [t("M8–12", "T8–12"), t("Retrain & scale", "Huấn luyện lại & mở rộng"), t("Retrain on real outcomes, then add warehouses and brands, only if the gates are met.", "Huấn luyện lại trên kết quả thật, rồi mở rộng kho và thương hiệu, chỉ khi đạt các mốc.")],
           ].map(([m, title, text]) => (
             <div key={m} className="rounded-[9px] bg-[#FFFEF6]/10 p-6">
               <p className={`${NUM} text-3xl`}>{m}</p>
@@ -321,8 +322,8 @@ async function Content() {
           <SectionHead title={t("The Loopies", "Đội Loopies")} />
           <div className="mt-12 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              ["Diva Meilla Sinaga, B.M.", t("Business dev. & partnerships", "Phát triển kinh doanh & đối tác")],
-              ["Permata Andini Nisyah, B.M.", t("Finance, impact & compliance", "Tài chính, tác động & tuân thủ")],
+              ["Diva Meilla Nisyah, B.M.", t("Business dev. & partnerships", "Phát triển kinh doanh & đối tác")],
+              ["Permata Andini Sinaga, B.M.", t("Finance, impact & compliance", "Tài chính, tác động & tuân thủ")],
               ["Aisha Nasywa Emiliana, B.Eng.", t("Operations & recovery system", "Vận hành & hệ thống thu hồi")],
               ["I Ketut Veda Suputra, B.Cs.", t("AI, website, data & product", "AI, website, dữ liệu & sản phẩm")],
             ].map(([name, role]) => (

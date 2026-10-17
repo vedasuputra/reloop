@@ -12,18 +12,18 @@ const MAX_ORDERS = 1000;
 const REQUIRED: (keyof Order)[] = ["category", "payment_method", "quantity_of_item", "estimated_delivery_distance_km"];
 
 export async function POST(req: Request) {
-  let body: any;
+  let body: { orders?: unknown; method?: unknown; preset?: unknown } | null;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Body must be JSON." }, { status: 400 });
   }
-  const orders = Array.isArray(body?.orders) ? body.orders : null;
+  const orders = Array.isArray(body?.orders) ? (body.orders as Record<string, unknown>[]) : null;
   if (!orders || orders.length === 0) return NextResponse.json({ error: 'Send "orders": [ ... ].' }, { status: 400 });
   if (orders.length > MAX_ORDERS) return NextResponse.json({ error: `At most ${MAX_ORDERS} orders per request.` }, { status: 400 });
 
-  const method: CollectionMethod = body.method === "dropoff" ? "dropoff" : "courier_pickup";
-  const preset = PRESETS.some((p) => p.key === body.preset) ? body.preset : DEFAULT_PRESET;
+  const method: CollectionMethod = body?.method === "dropoff" ? "dropoff" : "courier_pickup";
+  const preset = PRESETS.find((p) => p.key === body?.preset)?.key ?? DEFAULT_PRESET;
   const cfg = withPreset(baseConfig, preset);
 
   const results = [];
