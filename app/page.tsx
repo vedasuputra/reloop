@@ -9,6 +9,7 @@ import { baseConfig, model, DEFAULT_PRESET } from "@/lib/data";
 import { scoreOrder, withPreset, settingsFromConfig } from "@/lib/rvs";
 import { LANDING_EXAMPLE } from "@/lib/example";
 import AssistantWidget from "@/components/AssistantWidget";
+import LoginModal, { LoginTrigger } from "@/components/LoginModal";
 import SmoothLink from "@/components/SmoothLink";
 import { getT, type T, type Fmt } from "@/lib/i18n";
 import { TARGETS } from "@/lib/targets";
@@ -99,9 +100,9 @@ async function Content() {
           </nav>
           <div className="flex items-center gap-3">
             <LangSwitch lang={lang} size="lg" />
-            <Link href={cta} className={`${BTN} bg-[#174538] text-[#FFFEEA]`}>
+            <Cta href={cta} signedIn={!!user} className={`${BTN} bg-[#174538] text-[#FFFEEA]`}>
               {user ? t("Open app", "Mở ứng dụng") : t("Log in", "Đăng nhập")}
-            </Link>
+            </Cta>
           </div>
         </header>
       </div>
@@ -119,7 +120,7 @@ async function Content() {
                  "ReLoop AI quyết định cho từng đơn hàng nên dùng bao bì tái sử dụng hay dùng một lần giúp thương hiệu thời trang giảm bao bì dùng một lần mà không tốn thêm chi phí. Chúng tôi bán quyết định, không bán bao bì.")}
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link href={cta} className={`${BTN} bg-white text-[#174538]`}>{ctaLabel} →</Link>
+              <Cta href={cta} signedIn={!!user} className={`${BTN} bg-white text-[#174538]`}>{ctaLabel} →</Cta>
               <SmoothLink href="#how" className={`${BTN} border border-[#FFFEEA]/70`}>{t("See how it works", "Xem cách hoạt động")}</SmoothLink>
             </div>
           </div>
@@ -339,9 +340,25 @@ async function Content() {
           <p className="mx-auto mt-5 max-w-2xl opacity-85">
             {t("Open the working prototype: upload orders, see predictions, download the packing list.", "Mở bản mẫu đang chạy: tải đơn hàng lên, xem dự đoán, tải danh sách đóng gói.")}
           </p>
-          <Link href={cta} className={`${BTN} mt-8 bg-white text-[#174538]`}>{ctaLabel} →</Link>
+          <Cta href={cta} signedIn={!!user} className={`${BTN} mt-8 bg-white text-[#174538]`}>{ctaLabel} →</Cta>
         </div>
       </GreenSection>
+
+      {/* Login popup: opened by the Log in / demo buttons, or by ?login=1 */}
+      {!user && (
+        <LoginModal fontClass={`${body.className} ${display.variable}`} copy={{
+          title: t("Log in", "Đăng nhập"),
+          password: t("Password", "Mật khẩu"),
+          passwordHint: t("Min. 6 characters", "Tối thiểu 6 ký tự"),
+          login: t("Log in", "Đăng nhập"),
+          signup: t("Sign up", "Đăng ký"),
+          close: t("Close", "Đóng"),
+          demo: t("Demo account: demo@reloop.app / pass: reloop", "Tài khoản demo: demo@reloop.app / pass: reloop"),
+          note: t(
+            "The demo account is shared, so its data may change when others use it. Sign up for your own account to try CSV upload, cost settings and retraining undisturbed. All demo orders are simulated.",
+            "Tài khoản demo được dùng chung nên dữ liệu có thể thay đổi khi người khác sử dụng. Hãy đăng ký tài khoản riêng để thử tải CSV, cài đặt chi phí và huấn luyện lại mà không bị ảnh hưởng. Toàn bộ đơn hàng demo là dữ liệu mô phỏng."),
+        }} />
+      )}
 
       {/* Ask AI: general questions for visitors; data questions after login */}
       <AssistantWidget org="" preset="" method="dropoff" lang={lang} variant="brand" fontClass={body.className} />
@@ -352,6 +369,11 @@ async function Content() {
       </footer>
     </>
   );
+}
+
+/** Signed in: link to the app. Signed out: open the login popup. */
+function Cta({ href, signedIn, className, children }: { href: string; signedIn: boolean; className: string; children: ReactNode }) {
+  return signedIn ? <Link href={href} className={className}>{children}</Link> : <LoginTrigger className={className}>{children}</LoginTrigger>;
 }
 
 function SectionHead({ title }: { title: string }) {

@@ -42,8 +42,8 @@ const TXT = {
 };
 
 const PUBLIC = {
-  en: ["What does ReLoop AI do?", "Why only REUSABLE with drop-off?", "How is the RVS calculated?", "How does the 12-month pilot work?"],
-  vi: ["ReLoop AI làm gì?", "Vì sao chỉ REUSABLE khi tự gửi trả?", "RVS được tính như thế nào?", "Chương trình thí điểm 12 tháng diễn ra thế nào?"],
+  en: ["What does ReLoop AI do?", "Why only REUSABLE with drop-off?", "How is the RVS calculated?", "Why can't I log in?"],
+  vi: ["ReLoop AI làm gì?", "Vì sao chỉ REUSABLE khi tự gửi trả?", "RVS được tính như thế nào?", "Vì sao tôi không đăng nhập được?"],
 };
 
 export default function AssistantChat({ org, preset, method, lang, variant = "plain" }: {
@@ -90,7 +90,7 @@ export default function AssistantChat({ org, preset, method, lang, variant = "pl
         {msgs.length === 0 && (
           <div className="text-sm space-y-2">
             <p className="text-gray-500">{L.examples}</p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-col items-start gap-2">
               {L.suggestions.map((s) => (
                 <button key={s} onClick={() => send(s)}
                   className={brand ? "cursor-pointer rounded-[9px] border border-[#174538]/20 bg-gradient-to-b from-[#FFFEF2] to-[#FFFEEA] px-3 py-1.5 text-left hover:border-[#174538]/50" : "rounded border px-2 py-1 text-left"}>{s}</button>

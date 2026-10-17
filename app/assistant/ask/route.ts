@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     const facts = publicFacts(cfg, { drop, courier, predReturn: drop.predReturnProb });
     const ai = await askAI(question, facts, history);
     if (ai && unverifiedNumbers(ai, facts, SYSTEM_PROMPT, question).length === 0) return Response.json({ answer: ai, source: "ai" });
-    return Response.json({ answer: publicRuleAnswer(t), source: ai ? "checked" : "rules" });
+    return Response.json({ answer: publicRuleAnswer(t, question), source: ai ? "checked" : "rules" });
   }
 
   const sp: Params = { org: body.org, preset: body.preset, method: body.method };
