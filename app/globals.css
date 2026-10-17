@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
+/* Tell Tailwind exactly where the class names are, so no file is skipped */
+@source "./";
+@source "../components";
+@source "../lib";
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #174538;
 }
 
 @theme inline {
@@ -12,15 +17,29 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Light only: no dark-mode colours (the design is cream/white with deep green) */
+html {
+  color-scheme: light;
+  scroll-behavior: smooth; /* menu links glide to their section */
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Tailwind v4 no longer gives buttons a pointer cursor; bring it back everywhere */
+button:not(:disabled), [role="button"], summary, select { cursor: pointer; }
+
+/* Page transition: every page fades and rises in slightly when it opens (see app/template.tsx) */
+@keyframes rl-page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.rl-page { animation: rl-page-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .rl-page { animation: none; }
 }

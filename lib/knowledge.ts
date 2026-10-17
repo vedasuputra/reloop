@@ -41,5 +41,7 @@ LIMITS (say these honestly when relevant)
 - No pilot with a real brand has been run yet.
 
 BUSINESS MODEL
-- Main revenue: monthly SaaS subscription. Extra: one-time integration fee, premium sustainability/EPR reporting, custom AI model, enterprise consulting. Exact prices are not in the app; do not quote any.
+- Main revenue: monthly SaaS subscription. Planning prices (not signed contracts): Starter 3M VND/month (one brand, CSV workflow, dashboard, simulator, report), Growth 7M VND/month (API integration, custom AI model, multiple data sets), Enterprise 15M VND/month (multi-warehouse, scheduled retraining, priority support). One-time integration fee 15M VND. Add-ons: premium ESG/EPR reports, custom models, consulting.
+- Pilot plan (12 months): M1-3 historical-data pilot in shadow mode, M4-6 live API and return-channel test, M7-12 retrain and scale only if the gates are met. Targets by month 12: AUC at least 0.70, 80% of packs returned without a courier, 400 single-use packs avoided per 1,000 orders, at least 15% packaging cost saving vs all single-use.
+- Team (the Loopies): Diva Meilla Sinaga (business development & partnerships), Permata Andini Nisyah (finance, impact & compliance), Aisha Nasywa Emiliana (operations & recovery system), I Ketut Veda Suputra (AI, website, data & product). UEH Business Challenge 2026.
 `;

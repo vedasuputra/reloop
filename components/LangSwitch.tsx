@@ -1,19 +1,30 @@
 "use client";
+import { useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-/** EN / VI toggle. Saves the choice in a cookie for a year, then reloads the server-rendered page. */
-export default function LangSwitch({ lang }: { lang: "en" | "vi" }) {
+/** EN / VN toggle. Saves the choice in a cookie for a year, then reloads the server-rendered page. */
+export default function LangSwitch({ lang, size = "sm" }: { lang: "en" | "vi"; size?: "sm" | "lg" }) {
   const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  // Show the "Loading…" box while the page is re-rendered in the new language
+  useEffect(() => {
+    window.dispatchEvent(new Event(pending ? "reloop:loading" : "reloop:loaded"));
+  }, [pending]);
+
   const set = (l: "en" | "vi") => {
+    if (l === lang) return;
     document.cookie = `lang=${l}; path=/; max-age=31536000; samesite=lax`;
-    router.refresh();
+    startTransition(() => router.refresh());
   };
+  const box = size === "lg" ? "rounded-[9px] px-4 py-2.5 leading-5" : "rounded px-2 py-0.5";
   return (
-    <div className="flex gap-1 text-sm" aria-label="Language">
+    <div className={`flex text-sm ${size === "lg" ? "gap-3" : "gap-1"}`} aria-label="Language">
       {(["en", "vi"] as const).map((l) => (
-        <button key={l} onClick={() => set(l)} aria-pressed={lang === l}
-          className={`rounded border px-2 py-0.5 ${lang === l ? "font-semibold" : "opacity-60"}`}>
-          {l === "en" ? "EN" : "VI"}
+        <button key={l} type="button" onClick={() => set(l)} aria-pressed={lang === l} disabled={pending}
+          style={{ cursor: pending ? "wait" : lang === l ? "default" : "pointer" }}
+          className={`${box} border transition-colors ${
+            lang === l ? "font-semibold" : "opacity-60 hover:bg-[#174538]/10 hover:opacity-100"}`}>
+          {l === "en" ? "EN" : "VN"}
         </button>
       ))}
     </div>

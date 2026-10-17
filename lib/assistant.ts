@@ -213,3 +213,27 @@ export function unverifiedNumbers(answer: string, ...sources: string[]): string[
   }
   return [...new Set(nums(answer))].filter((n) => n > 10 && !known.has(n) && !known.has(Math.round(n * 10) / 10)).map(String);
 }
+
+/**
+ * Facts for visitors who are not logged in (landing page): no order data, only the engine's
+ * settings and the live example from the landing page, computed the same way.
+ */
+export function publicFacts(cfg: Config, example: { drop: RvsLike; courier: RvsLike; predReturn: number }): string {
+  return [
+    "The visitor is NOT logged in and is on the public landing page. There is no order data available here.",
+    "If they ask about specific orders, their dashboard or their own data, tell them to log in with the demo account (demo@reloop.app / reloop) and use the Ask AI button inside the app.",
+    `Reference settings: single-use mailer ${vnd(cfg.packaging.single_use_mailer_vnd.value)}, box ${vnd(cfg.packaging.single_use_box_vnd.value)} (Outerwear), reusable pack ${vnd(cfg.packaging.reusable_pack_vnd.value)} used ${cfg.packaging.reuse_cycles.value} times, cleaning ${vnd(cfg.packaging.cleaning_per_reuse_vnd.value)} per use, courier pickup of an empty pack ${vnd(cfg.logistics.ghn_tariff_vnd.value.noi_tinh * cfg.logistics.pickup_order_share.value)}.`,
+    `Live example on the landing page: a Dress, paid COD, same item bought in 2 sizes, voucher used, returning customer with 33% past returns, 12 km away. Predicted return probability ${pct(example.predReturn)}.`,
+    `With drop-off return: RVS ${example.drop.rvs.toFixed(1)} -> ${example.drop.recommendation}; expected cost reusable ${vnd(example.drop.expCostReusableVnd)} vs single-use ${vnd(example.drop.expCostSingleVnd)}.`,
+    `With courier pickup: RVS ${example.courier.rvs.toFixed(1)} -> ${example.courier.recommendation}; expected cost reusable ${vnd(example.courier.expCostReusableVnd)} vs single-use ${vnd(example.courier.expCostSingleVnd)}.`,
+    "Simulator results (5,000 simulated orders, execution plan): ranking by RVS gives 25-74% lower added cost than random selection when packs need courier pickup; with drop-off, 40% reusable saves about 231k VND per 1,000 orders (about 25% of packaging cost). All simulated, not pilot results.",
+  ].join("\n");
+}
+type RvsLike = { rvs: number; recommendation: string; expCostReusableVnd: number; expCostSingleVnd: number };
+
+/** Template answer for visitors when the AI is unavailable. */
+export function publicRuleAnswer(t: T): string {
+  return t(
+    "ReLoop AI predicts each order's chance of being returned, then scores whether a reusable or single-use pack makes sense (RVS = 55% cost advantage + 30% chance the pack comes back + 15% reuse cycles; 70 or more means REUSABLE). Log in with the demo account (demo@reloop.app / reloop) to explore real recommendations, the simulator and the report.",
+    "ReLoop AI dự đoán xác suất hoàn hàng của từng đơn, rồi chấm điểm xem nên dùng bao bì tái sử dụng hay dùng một lần (RVS = 55% lợi thế chi phí + 30% khả năng bao bì quay về + 15% số vòng tái sử dụng; từ 70 trở lên là REUSABLE). Đăng nhập bằng tài khoản demo (demo@reloop.app / reloop) để xem đề xuất thật, bộ mô phỏng và báo cáo.");
+}

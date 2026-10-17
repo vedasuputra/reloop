@@ -26,7 +26,7 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   // Public pages: the landing page and login. Everything else needs a login.
   const path = request.nextUrl.pathname;
-  if (!user && path !== "/" && !path.startsWith("/login") && path !== "/privacy") {
+  if (!user && path !== "/" && !path.startsWith("/login") && path !== "/privacy" && path !== "/assistant/ask") {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
