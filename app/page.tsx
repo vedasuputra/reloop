@@ -19,7 +19,7 @@ import { TARGETS } from "@/lib/targets";
  * The example order and the cost comparison are computed live with the same engine as the app.
  * Simulator results come from the team's execution plan (simulated orders, not pilot results).
  *
- * Design: white page #FFFFFF, cream #FFFEEA for boxes, deep green #174538 (blocks #2F594F), hunter #355E3B for secondary text;
+ * Design: white page #FFFFFF, cream #FFFEF6 for boxes, deep green #174538 (blocks #2F594F), hunter #355E3B for secondary text;
  * cream background, deep green text and blocks, EB Garamond titles, Inter body, 9px corners.
  */
 const body = Inter({ subsets: ["latin", "vietnamese"], variable: "--font-body" });
@@ -29,6 +29,8 @@ const display = EB_Garamond({ subsets: ["latin", "vietnamese"], weight: ["400", 
 const EXAMPLE = LANDING_EXAMPLE;
 
 const H = "font-[family-name:var(--font-display)] font-normal tracking-tight";
+/** Numbers always use the body font, however big they are; the serif is for headings only. */
+const NUM = "font-medium tracking-tight";
 const BTN = "inline-block rounded-[9px] px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-85";
 
 export default function Landing() {
@@ -100,7 +102,7 @@ async function Content() {
           </nav>
           <div className="flex items-center gap-3">
             <LangSwitch lang={lang} size="lg" />
-            <Cta href={cta} signedIn={!!user} className={`${BTN} bg-[#174538] text-[#FFFEEA]`}>
+            <Cta href={cta} signedIn={!!user} className={`${BTN} bg-[#174538] text-[#FFFEF6]`}>
               {user ? t("Open app", "Mở ứng dụng") : t("Log in", "Đăng nhập")}
             </Cta>
           </div>
@@ -108,7 +110,7 @@ async function Content() {
       </div>
 
       {/* Hero: fills the screen below the menu, text on top, live example below */}
-      <section className="bg-gradient-to-b from-[#2F594F] to-[#264840] text-[#FFFEEA]">
+      <section className="bg-gradient-to-b from-[#2F594F] to-[#264840] text-[#FFFEF6]">
         <div className="mx-auto flex min-h-[calc(100svh-73px)] max-w-4xl flex-col items-center justify-center gap-12 px-6 py-16 text-center">
           <div className="rl-rise">
             <h1 className={`${H} text-5xl leading-[1.05] md:text-7xl`}>
@@ -121,7 +123,7 @@ async function Content() {
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Cta href={cta} signedIn={!!user} className={`${BTN} bg-white text-[#174538]`}>{ctaLabel} →</Cta>
-              <SmoothLink href="#how" className={`${BTN} border border-[#FFFEEA]/70`}>{t("See how it works", "Xem cách hoạt động")}</SmoothLink>
+              <SmoothLink href="#how" className={`${BTN} border border-[#FFFEF6]/70`}>{t("See how it works", "Xem cách hoạt động")}</SmoothLink>
             </div>
           </div>
 
@@ -147,7 +149,7 @@ async function Content() {
                   ))}
                 </dl>
                 </div>
-                <div className="flex items-center justify-between gap-4 border-t border-[#174538]/15 bg-gradient-to-b from-[#FFFEF2] to-[#FFFEEA] px-6 py-3.5">
+                <div className="flex items-center justify-between gap-4 border-t border-[#174538]/15 bg-[#FFFEF6] px-6 py-3.5">
                   <p className="font-medium">{t("Return probability", "Xác suất hoàn hàng")}</p>
                   <p className="text-xl font-bold leading-none">{f.pct(drop.predReturnProb)}</p>
                 </div>
@@ -168,7 +170,7 @@ async function Content() {
       </section>
 
       {/* Problem: cream block */}
-      <section className="w-full border-y border-[#174538]/10 bg-gradient-to-b from-[#FFFEF2] to-[#FFFEEA]">
+      <section className="w-full border-y border-[#174538]/10 bg-[#FFFEF6]">
         <div className="mx-auto max-w-6xl px-6 py-20">
         <div className="grid gap-6 md:grid-cols-3">
           <div>
@@ -190,8 +192,8 @@ async function Content() {
         <SectionHead title={t("Orders to packing list in four steps", "Từ đơn hàng đến danh sách đóng gói")} />
         <ol className="mt-12 grid gap-px overflow-hidden rounded-[9px] border border-[#174538]/20 bg-[#174538]/20 md:grid-cols-4">
           {steps.map(([title, text], i) => (
-            <li key={title} className="bg-gradient-to-b from-[#FFFEF2] to-[#FFFEEA] p-6">
-              <p className={`${H} text-5xl text-[#355E3B]`}>{String(i + 1).padStart(2, "0")}</p>
+            <li key={title} className="bg-[#FFFEF6] p-6">
+              <p className={`${NUM} text-5xl text-[#355E3B]`}>{String(i + 1).padStart(2, "0")}</p>
               <h3 className="mt-6 text-lg font-semibold">{title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-[#355E3B]">{text}</p>
             </li>
@@ -244,7 +246,7 @@ async function Content() {
           <GreenStat value={metrics.auc_model ? `${f.n(metrics.auc_model, 2)} vs ${f.n(metrics.auc_baseline_category_mean, 2)}` : "-"}
             label={t("return model AUC vs a category-only baseline, on newer orders", "AUC của mô hình so với mốc chỉ theo danh mục, trên các đơn mới hơn")} />
         </div>
-        <div className="mt-4 rounded-[9px] border border-[#174538]/25 bg-gradient-to-b from-[#FFFEF2] to-[#FFFEEA] p-5 text-sm leading-relaxed">
+        <div className="mt-4 rounded-[9px] border border-[#174538]/25 bg-[#FFFEF6] p-5 text-sm leading-relaxed">
           <b>{t("Honest limits", "Giới hạn được nêu rõ")}: </b>
           <span className="text-[#355E3B]">
             {t("CO₂ is not estimated yet (no sourced emission factor). EPR credits are excluded. Lost reusable bags are counted as waste. The 50% drop-off return rate is an assumption the pilot will measure.",
@@ -262,15 +264,15 @@ async function Content() {
             ["M4–6", t("Live API + channel test", "API trực tiếp + thử kênh thu hồi"), t("Real orders, capped share, measure how many packs come back without a courier.", "Đơn thật, giới hạn tỷ lệ, đo số bao bì quay về không cần shipper.")],
             ["M7–12", t("Retrain & scale", "Huấn luyện lại & mở rộng"), t("Retrain on real outcomes, then add warehouses and brands, only if the gates are met.", "Huấn luyện lại trên kết quả thật, rồi mở rộng kho và thương hiệu, chỉ khi đạt các mốc.")],
           ].map(([m, title, text]) => (
-            <div key={m} className="rounded-[9px] bg-[#FFFEEA]/10 p-6">
-              <p className={`${H} text-3xl`}>{m}</p>
+            <div key={m} className="rounded-[9px] bg-[#FFFEF6]/10 p-6">
+              <p className={`${NUM} text-3xl`}>{m}</p>
               <h3 className="mt-4 font-semibold">{title}</h3>
               <p className="mt-2 text-sm leading-relaxed opacity-85">{text}</p>
             </div>
           ))}
         </div>
         <p className="mt-10 text-sm font-semibold">{t("Targets by month 12", "Mục tiêu đến tháng 12")}</p>
-        <div className="mt-3 grid gap-px overflow-hidden rounded-[9px] border border-[#FFFEEA]/25 bg-[#FFFEEA]/25 sm:grid-cols-2 md:grid-cols-4">
+        <div className="mt-3 grid gap-px overflow-hidden rounded-[9px] border border-[#FFFEF6]/25 bg-[#FFFEF6]/25 sm:grid-cols-2 md:grid-cols-4">
           {[
             [`AUC ≥ ${f.n(TARGETS.auc, 2)}`, t("return prediction on real orders", "dự đoán hoàn hàng trên đơn thật")],
             [f.pct(TARGETS.selfReturn), t("packs returned without a courier", "bao bì quay về không cần shipper")],
@@ -278,7 +280,7 @@ async function Content() {
             [`≥ ${f.pct(TARGETS.costSaving)}`, t("packaging cost saving vs all single-use", "tiết kiệm chi phí bao bì so với toàn bộ dùng một lần")],
           ].map(([v, l]) => (
             <div key={l} className="bg-[#2a5148] p-5">
-              <p className={`${H} text-3xl`}>{v}</p>
+              <p className={`${NUM} text-3xl`}>{v}</p>
               <p className="mt-1 text-sm opacity-85">{l}</p>
             </div>
           ))}
@@ -296,13 +298,13 @@ async function Content() {
           ].map(([name, price, text], i) => {
             const featured = i === 1;
             return (
-              <div key={name} className={`rounded-[9px] border p-7 ${featured ? "border-[#264840] bg-gradient-to-b from-[#2F594F] to-[#264840] text-[#FFFEEA]" : "border-[#174538]/25 bg-gradient-to-b from-[#FFFEF2] to-[#FFFEEA]"}`}>
+              <div key={name} className={`rounded-[9px] border p-7 ${featured ? "border-[#264840] bg-gradient-to-b from-[#2F594F] to-[#264840] text-[#FFFEF6]" : "border-[#174538]/25 bg-[#FFFEF6]"}`}>
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold">{name}</h3>
                 </div>
-                <p className={`${H} mt-6 text-5xl`}>{price}</p>
-                <p className="text-sm opacity-75">VND / {t("month", "tháng")}</p>
-                <p className="mt-6 text-sm leading-relaxed opacity-85">{text}</p>
+                <p className={`${NUM} mt-3 text-5xl`}>{price}</p>
+                <p className="mt-2 text-sm opacity-75">VND/{t("month", "tháng")}</p>
+                <p className="mt-4 text-sm leading-relaxed opacity-85">{text}</p>
               </div>
             );
           })}
@@ -383,7 +385,7 @@ function SectionHead({ title }: { title: string }) {
 /** Deep green block that runs from edge to edge of the screen. */
 function GreenSection({ children }: { children: ReactNode }) {
   return (
-    <section className="w-full bg-gradient-to-b from-[#2F594F] to-[#264840] text-[#FFFEEA]">
+    <section className="w-full bg-gradient-to-b from-[#2F594F] to-[#264840] text-[#FFFEF6]">
       <div className="mx-auto max-w-6xl px-6 py-20">{children}</div>
     </section>
   );
@@ -392,7 +394,7 @@ function GreenSection({ children }: { children: ReactNode }) {
 function TintStat({ value, label }: { value: string; label: string }) {
   return (
     <div className="rounded-[9px] border border-[#174538]/15 bg-white p-6">
-      <p className={`${H} text-4xl`}>{value}</p>
+      <p className={`${NUM} text-4xl`}>{value}</p>
       <p className="mt-3 text-sm leading-relaxed text-[#355E3B]">{label}</p>
     </div>
   );
@@ -400,8 +402,8 @@ function TintStat({ value, label }: { value: string; label: string }) {
 
 function GreenStat({ value, label }: { value: string; label: string }) {
   return (
-    <div className="rounded-[9px] bg-gradient-to-b from-[#2F594F] to-[#264840] p-6 text-[#FFFEEA]">
-      <p className={`${H} text-4xl`}>{value}</p>
+    <div className="rounded-[9px] bg-gradient-to-b from-[#2F594F] to-[#264840] p-6 text-[#FFFEF6]">
+      <p className={`${NUM} text-4xl`}>{value}</p>
       <p className="mt-3 text-sm leading-relaxed opacity-85">{label}</p>
     </div>
   );
@@ -410,7 +412,7 @@ function GreenStat({ value, label }: { value: string; label: string }) {
 function ResultCard({ t, f, title, r }: { t: T; f: Fmt; title: string; r: ReturnType<typeof scoreOrder> }) {
   const good = r.recommendation === "REUSABLE";
   return (
-    <div className={`rounded-[9px] p-4 ${good ? "border border-[#b7dccf] bg-[#EEF9F6]" : "border border-[#174538]/30 bg-gradient-to-b from-[#FFFEF2] to-[#FFFEEA]"}`}>
+    <div className={`rounded-[9px] p-4 ${good ? "border border-[#b7dccf] bg-[#EEF9F6]" : "border border-[#174538]/30 bg-[#FFFEF6]"}`}>
       <p className="text-xs opacity-80">{title}</p>
       <div className="mt-3"><RecTag rec={r.recommendation} size="lg" /></div>
       <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">

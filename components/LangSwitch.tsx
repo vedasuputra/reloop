@@ -3,7 +3,7 @@ import { useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 /** EN / VN toggle. Saves the choice in a cookie for a year, then reloads the server-rendered page. */
-export default function LangSwitch({ lang, size = "sm" }: { lang: "en" | "vi"; size?: "sm" | "lg" }) {
+export default function LangSwitch({ lang, size = "sm", tone = "light" }: { lang: "en" | "vi"; size?: "sm" | "lg"; tone?: "light" | "dark" }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   // Show the "Loading…" box while the page is re-rendered in the new language
@@ -23,7 +23,7 @@ export default function LangSwitch({ lang, size = "sm" }: { lang: "en" | "vi"; s
         <button key={l} type="button" onClick={() => set(l)} aria-pressed={lang === l} disabled={pending}
           style={{ cursor: pending ? "wait" : lang === l ? "default" : "pointer" }}
           className={`${box} border transition-colors ${
-            lang === l ? "font-semibold" : "opacity-60 hover:bg-[#174538]/10 hover:opacity-100"}`}>
+            lang === l ? "font-semibold" : `opacity-60 hover:opacity-100 ${tone === "dark" ? "hover:bg-[#FFFEF6]/15" : "hover:bg-[#174538]/10"}`}`}>
           {l === "en" ? "EN" : "VN"}
         </button>
       ))}

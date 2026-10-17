@@ -67,7 +67,7 @@ export default function LoginModal({ copy, fontClass = "" }: { copy: LoginCopy; 
           <button type="button" onClick={close} aria-label={copy.close}
             className="absolute right-3 top-3 cursor-pointer rounded-[9px] px-2.5 py-1 text-xl leading-none text-[#355E3B] hover:bg-[#174538]/10">×</button>
           <h2 className="font-[family-name:var(--font-display)] text-4xl font-normal leading-tight tracking-tight">{copy.title}</h2>
-          <p className="mt-2 whitespace-nowrap text-[13px] text-[#355E3B]">{copy.demo}</p>
+          <p className="mt-2 whitespace-nowrap text-xs text-[#355E3B]/70">{copy.demo}</p>
 
           {error && <p role="alert" className="mt-5 rounded-[9px] border border-[#174538]/25 bg-[#FFFDD0] px-3.5 py-2.5 text-sm">{error}</p>}
 
@@ -81,7 +81,7 @@ export default function LoginModal({ copy, fontClass = "" }: { copy: LoginCopy; 
               <input name="password" type="password" required autoComplete="current-password" placeholder={copy.passwordHint} className={INPUT} />
             </label>
             <div className="flex gap-3 pt-2">
-              <button formAction={loginAction} disabled={pending} className={`${BTN} bg-[#174538] text-[#FFFEEA]`}>{copy.login}</button>
+              <button formAction={loginAction} disabled={pending} className={`${BTN} bg-[#174538] text-[#FFFEF6]`}>{copy.login}</button>
               <button formAction={signupAction} disabled={pending} className={`${BTN} border border-[#174538]/40`}>{copy.signup}</button>
             </div>
           </form>

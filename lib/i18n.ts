@@ -45,7 +45,8 @@ export const presetLabel = (t: T, key: string, fallback = key) =>
 
 /** Organisation names stored in Supabase are Indonesian ("Data saya (email)"); show them in the chosen language. */
 export const orgLabel = (t: T, name: string) =>
-  name.replace(/^Data saya/, t("My data", "Dữ liệu của tôi"));
+  name.replace(/^Data saya/, t("My data", "Dữ liệu của tôi"))
+    .replace(/^Demo \(data simulasi\)/, t("Demo (simulated data)", "Demo (dữ liệu mô phỏng)"));
 
 /** One-line reason for a recommendation, in the chosen language. */
 export function reasonText(t: T, f: Fmt, r: { predReturnProb: number; expCostReusableVnd: number; expCostSingleVnd: number; packReturnProb: number }, method: string) {

@@ -34,6 +34,23 @@ body {
 /* Tailwind v4 no longer gives buttons a pointer cursor; bring it back everywhere */
 button:not(:disabled), [role="button"], summary, select { cursor: pointer; }
 
+/* Content rises and fades in; set --d on the element to stagger it (e.g. style={{ "--d": "0.1s" }}) */
+@keyframes rl-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+.rl-rise { animation: rl-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s) both; }
+@media (prefers-reduced-motion: reduce) {
+  .rl-rise { animation: none; }
+}
+
+/* New table rows fade in (the table body is re-keyed whenever the filters, sort or page change) */
+@keyframes rl-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.rl-fade { animation: rl-fade-in 0.28s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .rl-fade { animation: none; }
+}
+
 /* Page transition: every page fades and rises in slightly when it opens (see app/template.tsx) */
 @keyframes rl-page-in {
   from { opacity: 0; transform: translateY(8px); }

@@ -50,13 +50,13 @@ export default function AssistantWidget({ org, preset, method, lang, variant = "
       {open ? (
         <div style={{ width: "min(400px, calc(100vw - 40px))" }}
           className="rl-pop overflow-hidden rounded-[9px] border border-[#174538]/15 bg-white text-[#174538] shadow-[0_24px_60px_-20px_rgba(23,69,56,0.45)]">
-          <div className="flex items-center justify-between bg-gradient-to-b from-[#2F594F] to-[#264840] px-5 py-4 text-[#FFFEEA]">
+          <div className="flex items-center justify-between bg-gradient-to-b from-[#2F594F] to-[#264840] px-5 py-4 text-[#FFFEF6]">
             <div>
               <p className="font-semibold">{L.title}</p>
               <p className="text-xs opacity-80">{L.note}</p>
             </div>
             <button onClick={() => setOpen(false)} aria-label={L.close}
-              className="cursor-pointer rounded-[9px] px-2 py-1 text-lg leading-none hover:bg-[#FFFEEA]/15">×</button>
+              className="cursor-pointer rounded-[9px] px-2 py-1 text-lg leading-none hover:bg-[#FFFEF6]/15">×</button>
           </div>
           <div className="p-4">
             <AssistantChat org={org} preset={preset} method={method} lang={lang} variant="brand" />
@@ -64,7 +64,7 @@ export default function AssistantWidget({ org, preset, method, lang, variant = "
         </div>
       ) : (
         <button onClick={() => setOpen(true)}
-          className="flex cursor-pointer items-center gap-2 rounded-[9px] bg-gradient-to-b from-[#2F594F] to-[#264840] px-5 py-3 text-sm font-semibold text-[#FFFEEA] shadow-[0_16px_40px_-16px_rgba(23,69,56,0.7)] transition-transform hover:-translate-y-0.5">
+          className="flex cursor-pointer items-center gap-2 rounded-[9px] bg-gradient-to-b from-[#2F594F] to-[#264840] px-5 py-3 text-sm font-semibold text-[#FFFEF6] shadow-[0_16px_40px_-16px_rgba(23,69,56,0.7)] transition-transform hover:-translate-y-0.5">
           <span aria-hidden className="inline-block h-2 w-2 rounded-full bg-[#DFF19F]" />
           {L.open}
         </button>

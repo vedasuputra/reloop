@@ -126,7 +126,7 @@ export function ruleAnswer(question: string, scored: Scored[], order: Scored | n
 }
 
 /** Call Google Gemini (free tier). Returns null when there is no key or the call fails. */
-export async function askGemini(question: string, facts: string, history: { role: "user" | "assistant"; text: string }[]): Promise<string | null> {
+export async function askGemini(question: string, facts: string, history: { role: "user" | "assistant"; text: string }[], system = SYSTEM_PROMPT): Promise<string | null> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return null;
   const model = process.env.GEMINI_MODEL || "gemini-3.8-flash";
@@ -139,7 +139,7 @@ export async function askGemini(question: string, facts: string, history: { role
       method: "POST",
       headers: { "Content-Type": "application/json", "x-goog-api-key": key },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        systemInstruction: { parts: [{ text: system }] },
         contents,
         generationConfig: {
           temperature: 0.2, maxOutputTokens: 2048, // room for the model's internal reasoning plus a short answer
@@ -165,7 +165,7 @@ export async function askGemini(question: string, facts: string, history: { role
 }
 
 /** Call Groq (free tier, OpenAI-style API, very fast). Returns null when there is no key or the call fails. */
-export async function askGroq(question: string, facts: string, history: { role: "user" | "assistant"; text: string }[]): Promise<string | null> {
+export async function askGroq(question: string, facts: string, history: { role: "user" | "assistant"; text: string }[], system = SYSTEM_PROMPT): Promise<string | null> {
   const key = process.env.GROQ_API_KEY;
   if (!key) return null;
   const model = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
@@ -176,7 +176,7 @@ export async function askGroq(question: string, facts: string, history: { role: 
       body: JSON.stringify({
         model, temperature: 0.2, max_tokens: 800,
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: system },
           ...history.slice(-6).map((m) => ({ role: m.role, content: m.text.slice(0, 2000) })),
           { role: "user", content: `FACTS:\n${facts}\n\nQUESTION: ${question}` },
         ],
