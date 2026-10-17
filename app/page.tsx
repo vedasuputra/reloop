@@ -342,7 +342,7 @@ async function Content() {
         <div className="py-8 text-center">
           <h2 className={`${H} text-4xl md:text-6xl`}><em className="italic">{t("The right package for every order.", "Đúng bao bì cho mọi đơn hàng.")}</em></h2>
           <p className="mx-auto mt-5 max-w-2xl opacity-85">
-            {t("Open the working prototype: upload orders, see the predictions, download the packing list.", "Mở bản mẫu đang chạy: tải đơn hàng lên, xem dự đoán, tải danh sách đóng gói.")}
+            {t("Open the working prototype: upload orders, see predictions, download the packing list.", "Mở bản mẫu đang chạy: tải đơn hàng lên, xem dự đoán, tải danh sách đóng gói.")}
           </p>
           <Link href={cta} className={`${BTN} mt-8 bg-white text-[#174538]`}>{ctaLabel} →</Link>
         </div>
