@@ -122,11 +122,6 @@ async function Content() {
               <Link href={cta} className={`${BTN} bg-white text-[#174538]`}>{ctaLabel} →</Link>
               <SmoothLink href="#how" className={`${BTN} border border-[#FFFEEA]/70`}>{t("See how it works", "Xem cách hoạt động")}</SmoothLink>
             </div>
-            {!user && (
-              <p className="mt-5 text-sm opacity-85">
-                {t("Demo account", "Tài khoản demo")}: <b>demo@reloop.app</b> / <b>reloop</b>
-              </p>
-            )}
           </div>
 
           {/* Live example: same order, two return channels */}
@@ -183,8 +178,8 @@ async function Content() {
             </p>
           </div>
           <TintStat value={f.vnd(pickup)} label={t("courier pickup of one empty pack (GHN tariff)", "phí shipper lấy một bao bì rỗng (cước GHN)")} />
-          <TintStat value={f.vnd(perUse)} label={t(`per reuse of a reusable bag, incl. washing — about ${Math.round(pickup / perUse)}× less than one pickup`,
-            `mỗi lần dùng lại túi tái sử dụng, gồm vệ sinh — rẻ hơn khoảng ${Math.round(pickup / perUse)} lần so với một lần lấy hàng`)} />
+          <TintStat value={f.vnd(perUse)} label={t(`per reuse of a reusable bag, incl. washing, about ${Math.round(pickup / perUse)}× less than one pickup`,
+            `mỗi lần dùng lại túi tái sử dụng, gồm vệ sinh, rẻ hơn khoảng ${Math.round(pickup / perUse)} lần so với một lần lấy hàng`)} />
         </div>
         </div>
       </section>
@@ -243,7 +238,7 @@ async function Content() {
         </p>
         <div className="mt-10 grid gap-3 md:grid-cols-4">
           <GreenStat value="25–74%" label={t("lower added cost than random selection when packs need courier pickup", "chi phí phát sinh thấp hơn so với chọn ngẫu nhiên khi cần shipper lấy bao bì")} />
-          <GreenStat value={t("−231k VND", "−231 nghìn VND")} label={t("per 1,000 orders at 40% reusable with drop-off — about 25% of packaging cost", "trên 1.000 đơn ở mức 40% tái sử dụng khi khách tự gửi trả — khoảng 25% chi phí bao bì")} />
+          <GreenStat value={t("−231k VND", "−231 nghìn VND")} label={t("per 1,000 orders at 40% reusable with drop-off, about 25% of packaging cost", "trên 1.000 đơn ở mức 40% tái sử dụng khi khách tự gửi trả, khoảng 25% chi phí bao bì")} />
           <GreenStat value={t("~4,000", "~4.000")} label={t("single-use packs avoided per day at Coolmate's volume (~10,000 orders/day), illustrative", "bao bì dùng một lần được tránh mỗi ngày ở quy mô Coolmate (~10.000 đơn/ngày), minh họa")} />
           <GreenStat value={metrics.auc_model ? `${f.n(metrics.auc_model, 2)} vs ${f.n(metrics.auc_baseline_category_mean, 2)}` : "-"}
             label={t("return model AUC vs a category-only baseline, on newer orders", "AUC của mô hình so với mốc chỉ theo danh mục, trên các đơn mới hơn")} />
@@ -264,7 +259,7 @@ async function Content() {
           {[
             ["M1–3", t("Historical-data pilot", "Thí điểm trên dữ liệu lịch sử"), t("Shadow mode: score the brand's past orders and compare with what really happened.", "Chế độ chạy song song: chấm điểm đơn cũ của thương hiệu và so với thực tế.")],
             ["M4–6", t("Live API + channel test", "API trực tiếp + thử kênh thu hồi"), t("Real orders, capped share, measure how many packs come back without a courier.", "Đơn thật, giới hạn tỷ lệ, đo số bao bì quay về không cần shipper.")],
-            ["M7–12", t("Retrain & scale", "Huấn luyện lại & mở rộng"), t("Retrain on real outcomes, then add warehouses and brands — only if the gates are met.", "Huấn luyện lại trên kết quả thật, rồi mở rộng kho và thương hiệu — chỉ khi đạt các mốc.")],
+            ["M7–12", t("Retrain & scale", "Huấn luyện lại & mở rộng"), t("Retrain on real outcomes, then add warehouses and brands, only if the gates are met.", "Huấn luyện lại trên kết quả thật, rồi mở rộng kho và thương hiệu, chỉ khi đạt các mốc.")],
           ].map(([m, title, text]) => (
             <div key={m} className="rounded-[9px] bg-[#FFFEEA]/10 p-6">
               <p className={`${H} text-3xl`}>{m}</p>
